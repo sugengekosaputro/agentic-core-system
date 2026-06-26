@@ -1,0 +1,23 @@
+# agentkit manifest — human-authored intent consumed by `agentkit init`.
+# `init` resolves this into .agents/project.json (machine-maintained state).
+
+core:
+  version: "0.1.0"
+
+# Presets to layer on top of core. preset-base supplies the reusable
+# virtual-assistant-* methodology; a stack preset supplies stack-* skills.
+presets:
+  - name: preset-base
+    version: "0.1.0"
+  # - name: preset-spring-boot
+  #   version: "0.1.0"
+
+project:
+  name: my-project
+  language: ""        # e.g. java, typescript, go
+  framework: ""       # e.g. spring-boot, angular
+  commands:
+    verify: ""        # pre-push gate, e.g. "./mvnw -q test -Dtest=ArchitectureTest"
+
+memory:
+  scope: both         # workspace | agent | both

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "name": "my-project",
+  "description": "",
+  "language": "",
+  "framework": "",
+  "buildTool": "",
+  "commands": { "verify": "" },
+  "kit": { "core": "0.1.0", "presets": [] },
+  "skills": {
+    "core": ["core-init", "core-consultant", "core-orchestrator"],
+    "virtual-assistant": [],
+    "stack": []
+  },
+  "memory": { "scope": "both" },
+  "kitManaged": [
+    ".agents/README.md",
+    ".agents/skills/core-init",
+    ".agents/skills/core-consultant",
+    ".agents/skills/core-orchestrator",
+    ".githooks"
+  ]
+}

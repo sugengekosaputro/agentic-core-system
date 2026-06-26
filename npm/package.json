@@ -1,0 +1,15 @@
+{
+  "name": "agentkit-core",
+  "version": "0.1.0",
+  "description": "npx wrapper for agentkit-core (delegates to the Python engine).",
+  "bin": {
+    "agentkit": "bin/agentkit.js"
+  },
+  "files": [
+    "bin/"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "license": "MIT"
+}
