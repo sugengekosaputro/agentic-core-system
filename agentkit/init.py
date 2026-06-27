@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from . import generate_adapters
+from . import generate_adapters, presets
 
 TEMPLATES = Path(__file__).parent / "templates"
 CORE_SKILLS = TEMPLATES / "skills" / "core"
@@ -59,7 +59,7 @@ def _seed_project_json(root: Path, manifest: dict) -> None:
         "commands": proj.get("commands", {"verify": ""}),
         "kit": {
             "core": (manifest.get("core") or {}).get("version", ""),
-            "presets": manifest.get("presets", []),
+            "presets": [],
         },
         "skills": {
             "core": ["core-init", "core-consultant", "core-orchestrator"],
@@ -110,6 +110,18 @@ def run(root: Path) -> Path:
             _copy_if_missing(skill_dir, root / ".agents/skills" / skill_dir.name)
 
     _seed_project_json(root, manifest)
+
+    # apply presets declared in the manifest (bundled by name or a local path)
+    for entry in manifest.get("presets", []) or []:
+        name = entry.get("name") if isinstance(entry, dict) else entry
+        if not name:
+            continue
+        preset_dir = presets.resolve_preset(name)
+        if preset_dir is not None:
+            presets.apply_preset(root, preset_dir)
+        else:
+            print(f"agentkit: warning — preset not found, skipped: {name}")
+
     generate_adapters.sync(root, check=False)
     _enable_hooks(root)
     return root
