@@ -17,15 +17,44 @@ files; there is no live dependency on the kit repo.
 
 ## 1. Install the tool (once)
 
+When published, install is one line:
+
 ```sh
-pipx install agentkit-core        # recommended
+pipx install agentkit-core        # recommended (isolated)
 # or zero-install:
 npx agentkit <command>            # thin Node wrapper over the same Python engine
 ```
 
-> Not yet published to PyPI/npm. Until then, install from source:
-> `pipx install /path/to/agentic-core-system` (or a git URL). After publish:
-> `pipx install agentkit-core`.
+### Installing a local / unpublished build (today)
+
+This kit is currently **local only** — there is no PyPI/npm release yet. A consumer
+needs the repo on their machine and installs from that path. On modern Python
+(PEP 668 "externally managed"), a bare `pip install --user` is blocked, so use one
+of these:
+
+```sh
+# A) pipx from the local path (recommended; isolated, puts `agentkit` on PATH)
+brew install pipx && pipx ensurepath        # if pipx is missing
+pipx install /path/to/agentic-core-system
+
+# B) a virtualenv (no global changes)
+python3 -m venv ~/.venvs/agentkit
+~/.venvs/agentkit/bin/pip install /path/to/agentic-core-system
+~/.venvs/agentkit/bin/agentkit --version    # or add that bin dir to PATH
+
+# C) run without installing (from any project dir)
+PYTHONPATH=/path/to/agentic-core-system python3 -m agentkit.cli init
+```
+
+How the install path evolves:
+
+| Stage | Install command |
+|-------|-----------------|
+| Local (now) | `pipx install /path/to/agentic-core-system` |
+| Pushed to GitHub (no PyPI needed) | `pipx install git+https://github.com/<you>/agentic-core-system.git` |
+| Published to PyPI | `pipx install agentkit-core` |
+
+After install, `agentkit` is a real command you run inside any project (next steps).
 
 ## 2a. Blank project
 

@@ -23,8 +23,11 @@ pipx install agentkit-core      # Python CLI
 npx agentkit <command>          # thin Node wrapper over the same engine
 ```
 
-> Not yet published to PyPI/npm. Until then install from source:
-> `pipx install /path/to/agentic-core-system`. After publish: `pipx install agentkit-core`.
+> Not yet published to PyPI/npm. Until then, install from a local clone — e.g.
+> `pipx install /path/to/agentic-core-system`, or via a venv, or run without
+> installing (`PYTHONPATH=/path python3 -m agentkit.cli ...`). See
+> [docs/usage.md](docs/usage.md#1-install-the-tool-once). After publish:
+> `pipx install agentkit-core`.
 
 ## Quickstart
 
