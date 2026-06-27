@@ -1,0 +1,9 @@
+{
+  "initializer": {
+    "tool": "Angular CLI",
+    "url": "https://angular.dev",
+    "note": "Create the app with `ng new` (enable routing; pick your stylesheet). agentkit manages the agent context, not the application code."
+  },
+  "context7": ["Angular", "RxJS", "TypeScript"],
+  "conventions": "standalone components / feature modules; logic in services; lazy-loaded routes; strict typing."
+}

@@ -1,0 +1,9 @@
+{
+  "initializer": {
+    "tool": "Spring Initializr",
+    "url": "https://start.spring.io",
+    "note": "Generate the base app with Spring Initializr (suggested: web, data-jpa, postgresql, validation, flyway). agentkit manages the agent context, not the application code."
+  },
+  "context7": ["Spring Boot", "Spring Data JPA", "Flyway", "PostgreSQL"],
+  "conventions": "controller -> service -> repository; DTOs at the web layer; Flyway-owned schema; env-based configuration."
+}

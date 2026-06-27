@@ -52,5 +52,26 @@ class PresetApplyTests(unittest.TestCase):
         self.assertIsNone(presets.resolve_preset("preset-does-not-exist"))
 
 
+class StackPresetTests(unittest.TestCase):
+    def test_each_stack_preset_applies_clean(self):
+        stack_presets = [p for p in presets.available_presets() if p != "preset-base"]
+        self.assertTrue(stack_presets, "expected at least one stack preset")
+        for name in stack_presets:
+            with self.subTest(preset=name), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp).resolve()
+                init_mod.run(root)
+                presets.apply_preset(root, presets.resolve_preset("preset-base"))
+                presets.apply_preset(root, presets.resolve_preset(name))
+                generate_adapters.sync(root, check=False)
+                self.assertEqual(generate_adapters.sync(root, check=True), [])
+                self.assertEqual(validate_mod.validate(root), [])
+                # AGENTS.md must stay within the context budget after the project region grows
+                self.assertLessEqual(len((root / "AGENTS.md").read_bytes()), 7000)
+                # the preset's verify command is wired (drives the pre-push gate)
+                proj = json.loads((root / ".agents/project.json").read_text())
+                self.assertTrue(proj["commands"].get("verify"))
+
+
 if __name__ == "__main__":
     unittest.main()
+
