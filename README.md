@@ -17,17 +17,17 @@ develop** — adapting to your stack instead of a fixed one.
 
 ## Install (once)
 
+agentkit is a Python CLI, installed with [pipx](https://pipx.pypa.io):
+
 ```sh
-pipx install agentkit-core      # Python CLI
-# or, zero-install:
-npx agentkit <command>          # thin Node wrapper over the same engine
+pipx install git+https://github.com/sugengekosaputro/agentic-core-system.git
+# from a local clone instead:   pipx install ./agentic-core-system
+# after a PyPI release:         pipx install agentkit-core
+agentkit --version
 ```
 
-> Not yet published to PyPI/npm. Until then, install from a local clone — e.g.
-> `pipx install /path/to/agentic-core-system`, or via a venv, or run without
-> installing (`PYTHONPATH=/path python3 -m agentkit.cli ...`). See
-> [docs/usage.md](docs/usage.md#1-install-the-tool-once). After publish:
-> `pipx install agentkit-core`.
+New to Python or pipx? Follow the step-by-step **[beginner's guide](docs/usage.md)**
+— it covers installing Python, pipx, and agentkit from scratch.
 
 ## Quickstart
 

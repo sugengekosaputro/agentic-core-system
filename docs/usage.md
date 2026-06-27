@@ -1,173 +1,266 @@
-# Usage (for consumers)
+# Usage — a complete beginner's guide
 
-How to use agentkit-core in your own projects. You do **not** copy this repo into
-your project. agentkit is installed once as a tool; you run it inside your project,
-and only its output (a vendored `.agents/` tree + generated adapters) lands there.
+This guide takes you from a fresh machine to using agentkit in your own projects,
+explaining each step (not just commands). agentkit is a small **Python**
+command-line tool. You install it once; then you run it inside any project, and it
+sets up that project's AI-agent context for you.
 
-## Mental model
+> You do **not** copy this repository into your project. The tool lives on your
+> machine; only its output (a `.agents/` folder + per-provider files) is written
+> into your project, which then stands on its own.
 
-| Thing | Where it lives | Role |
-|-------|----------------|------|
-| `agentkit-core` repo | upstream (maintained by the kit owner) | source of truth; consumers don't touch it |
-| `agentkit` tool | your machine (pipx / npx) | the engine + templates |
-| Your project | your working directory | receives `.agents/` + adapters via `agentkit init` |
+---
 
-The result is **self-contained**: at runtime your AI provider reads the vendored
-files; there is no live dependency on the kit repo.
+## What you will end up with
 
-## 1. Install the tool (once)
+After setup you will have a command called `agentkit`. Inside any project you can run:
 
-When published, install is one line:
+- `agentkit init` — set up agent context for the project (once).
+- `agentkit sync` — regenerate the per-provider files after you change the source.
+- `agentkit validate` — check everything is consistent.
+- `agentkit upgrade` — pull in newer kit files later.
+
+---
+
+## Requirements
+
+| Requirement | Why | Minimum |
+|-------------|-----|---------|
+| **Python** | agentkit is written in Python | 3.10 or newer |
+| **git** | hooks + version control of your project | any recent version |
+| **pipx** | installs Python command-line tools cleanly (isolated) | latest |
+
+Check what you already have:
 
 ```sh
-pipx install agentkit-core        # recommended (isolated)
-# or zero-install:
-npx agentkit <command>            # thin Node wrapper over the same Python engine
+python3 --version     # expect: Python 3.10.x or higher
+git --version         # any version is fine
 ```
 
-### Installing a local / unpublished build (today)
+If `python3` is missing or older than 3.10, do **Step 1**. Otherwise skip to Step 2.
 
-This kit is currently **local only** — there is no PyPI/npm release yet. A consumer
-needs the repo on their machine and installs from that path. On modern Python
-(PEP 668 "externally managed"), a bare `pip install --user` is blocked, so use one
-of these:
+---
+
+## Step 1 — Install Python 3.10+ (only if needed)
+
+Python is the language agentkit runs on. Install it for your operating system:
+
+- **macOS** — easiest with [Homebrew](https://brew.sh):
+  ```sh
+  brew install python
+  ```
+  Or download the installer from <https://www.python.org/downloads/>.
+- **Windows** — download from <https://www.python.org/downloads/> and, in the
+  installer, tick **"Add python.exe to PATH"**. Or: `winget install Python.Python.3.12`.
+- **Linux (Debian/Ubuntu)**:
+  ```sh
+  sudo apt update && sudo apt install -y python3 python3-venv python3-pip
+  ```
+
+Verify:
 
 ```sh
-# A) pipx from the local path (recommended; isolated, puts `agentkit` on PATH)
-brew install pipx && pipx ensurepath        # if pipx is missing
-pipx install /path/to/agentic-core-system
-
-# B) a virtualenv (no global changes)
-python3 -m venv ~/.venvs/agentkit
-~/.venvs/agentkit/bin/pip install /path/to/agentic-core-system
-~/.venvs/agentkit/bin/agentkit --version    # or add that bin dir to PATH
-
-# C) run without installing (from any project dir)
-PYTHONPATH=/path/to/agentic-core-system python3 -m agentkit.cli init
+python3 --version
 ```
 
-How the install path evolves:
+---
 
-| Stage | Install command |
-|-------|-----------------|
-| Local (now) | `pipx install /path/to/agentic-core-system` |
-| Pushed to GitHub (no PyPI needed) | `pipx install git+https://github.com/<you>/agentic-core-system.git` |
-| Published to PyPI | `pipx install agentkit-core` |
+## Step 2 — Install pipx
 
-After install, `agentkit` is a real command you run inside any project (next steps).
+**What is pipx?** Plain `pip install` can clash with your system Python, and modern
+systems often block it (the "externally-managed environment" / PEP 668 error). pipx
+solves this: it installs each command-line tool in its own private environment and
+puts the command on your PATH, so `agentkit` "just works" without breaking anything.
 
-### Python (pipx) vs npm (npx)
+Install pipx:
 
-The engine is the Python package; the npm package is a thin wrapper that shims to
-it. They become available at different stages:
+- **macOS**: `brew install pipx`
+- **Windows**: `python -m pip install --user pipx`
+- **Linux**: `sudo apt install -y pipx`  (or `python3 -m pip install --user pipx`)
 
-| Stage | Python — `pipx`/`agentkit` | Node — `npx agentkit` |
-|-------|----------------------------|------------------------|
-| Local clone (now) | `pipx install /path` ✅ | run `node npm/bin/agentkit.js` after the engine is installed |
-| Pushed to GitHub | `pipx install git+https://…` ✅ | not on npm yet; install the engine via pipx, then the wrapper shims to it |
-| Published | `pipx install agentkit-core` ✅ | `npx agentkit …` ✅ (after `npm publish`) |
-
-So a GitHub-URL install covers the **Python CLI**. Full `npx agentkit` requires the
-wrapper to be published to npm; until then the wrapper only forwards to an
-already-installed Python engine (it prints install guidance if it can't find one).
-
-## 2a. Blank project
+Then let pipx fix your PATH and **open a new terminal afterward**:
 
 ```sh
-mkdir my-app && cd my-app && git init
-# optional: an agentkit.yaml manifest for non-interactive setup (see below)
-agentkit init
-# then create the actual code with the ecosystem's official tool, e.g.
-#   Spring Boot -> Spring Initializr     Angular -> ng new
+pipx ensurepath
 ```
 
-`init` scaffolds `.agents/**`, generates every provider adapter, seeds
-`.agents/project.json`, and enables the git hooks. The project directory must
-exist first (you create it); the core repo is never copied in.
+---
 
-## 2b. Existing project
+## Step 3 — Install agentkit
+
+agentkit is not yet on PyPI, so you install it from the source repository. Pick the
+option that matches your situation:
+
+**A) From GitHub (recommended once the repo is pushed):**
+```sh
+pipx install git+https://github.com/sugengekosaputro/agentic-core-system.git
+```
+
+**B) From a local clone (works today):**
+```sh
+git clone https://github.com/sugengekosaputro/agentic-core-system.git
+pipx install ./agentic-core-system
+```
+
+**C) Later, once published to PyPI:**
+```sh
+pipx install agentkit-core
+```
+
+Verify the command is available:
 
 ```sh
-cd existing-project
-agentkit init        # idempotent — never overwrites files you already have
+agentkit --version        # expect: agentkit 0.1.0
+```
+
+If you get "command not found", see [Troubleshooting](#troubleshooting).
+
+---
+
+## Step 4 — Use it in a brand-new (blank) project
+
+```sh
+mkdir my-app           # create your project folder
+cd my-app
+git init               # agentkit's hooks live in git
+agentkit init          # set up the agent context
+```
+
+`agentkit init` creates, in `my-app/`:
+
+- `.agents/` — the **canonical source** you edit: `permissions.json`, `mcp/servers.json`,
+  `README.md`, `project.json`, and `skills/` (the core skills core-init,
+  core-consultant, core-orchestrator).
+- `AGENTS.md` — the top-level instruction file every provider reads.
+- Generated provider files (do **not** edit these by hand): `.kiro/`, `.claude/` +
+  `CLAUDE.md`, `.codex/`, `opencode.json`, `.antigravity/`, `.mcp.json`.
+- `docs/` — a documentation skeleton organized by job function.
+- `.githooks/` — checks that run automatically when you commit/push.
+
+Then build your actual application with its normal tool — agentkit does not generate
+app code. For example: Spring Boot via [Spring Initializr](https://start.spring.io),
+Angular via `ng new`, a Python app via your usual scaffolder.
+
+---
+
+## Step 5 — Use it in an existing project
+
+```sh
+cd my-existing-project
+agentkit init          # safe: it never overwrites files you already have
 agentkit validate
 ```
 
-To consolidate scattered legacy agent context (CLAUDE.md, `.cursor`,
-`.github/copilot-instructions.md`, ad-hoc MCP config), let the agent follow the
-`core-init` skill: audit → classify → fold into canonical `.agents/**`. Deletions
-require your approval.
+`init` is idempotent — running it again changes nothing it has already created. If
+your project already has scattered AI config (a `CLAUDE.md`, a `.cursor/` folder,
+ad-hoc MCP settings), ask your agent to follow the `core-init` skill, which guides
+auditing and folding those into the canonical `.agents/` (it will not delete
+anything without your approval).
 
-## 3. Day-to-day loop
+---
+
+## The daily loop
+
+The golden rule: **edit the source, never the generated files.**
 
 ```sh
-# edit the SOURCE only: AGENTS.md and .agents/** (never edit generated adapters)
-agentkit sync         # regenerate all provider adapters
-agentkit validate     # check sync + canonical contracts
-git add -A && git commit   # the pre-commit hook blocks drift
+# 1. Edit only AGENTS.md or anything under .agents/
+#    (e.g. add a skill, change a permission, add an MCP server)
+
+# 2. Regenerate the per-provider files from your edits:
+agentkit sync
+
+# 3. Check everything is consistent:
+agentkit validate
+
+# 4. Commit. A git hook re-runs the check and blocks the commit if something drifted.
+git add -A && git commit -m "..."
 ```
 
-## 4. Manifest (optional, for automatic setup)
+Why this matters: each AI provider (Kiro, Claude, Codex, opencode, Antigravity)
+wants its config in a different place/format. You maintain **one** source; agentkit
+keeps all the provider files correct and in sync.
 
-Create `agentkit.yaml` before `init` to drive non-interactive setup:
+---
+
+## Optional — the manifest (`agentkit.yaml`)
+
+If you create an `agentkit.yaml` file **before** running `agentkit init`, setup
+becomes fully automatic (no questions asked). Minimal example:
 
 ```yaml
-core:
-  version: "0.1.0"
-presets:
-  - { name: preset-base, version: "0.1.0" }
 project:
   name: my-app
-  language: ""          # e.g. java, typescript
-  framework: ""         # e.g. spring-boot, angular
+  language: java          # optional
+  framework: spring-boot  # optional
   commands:
-    verify: ""          # pre-push gate, e.g. "./mvnw -q test -Dtest=ArchitectureTest"
+    verify: ""            # a command to run before "git push", e.g. "./mvnw test"
 memory:
   scope: both
 ```
 
-`init` resolves this into `.agents/project.json` (machine state). Without a
-manifest, `init` seeds sensible defaults from the directory name.
+Without a manifest, `init` fills in sensible defaults based on the folder name.
 
-## 5. Updating the kit later
+---
+
+## Updating agentkit later
 
 ```sh
-pipx upgrade agentkit-core    # get a newer tool version
-cd my-app && agentkit upgrade # refresh ONLY kit-managed files; your content is untouched
+pipx upgrade agentkit-core      # get the newer tool
+cd my-app && agentkit upgrade   # refresh only the kit-managed files
 ```
 
-Kit-managed files (recorded in `.agents/project.json` `kitManaged`) are the core
-skills, `.agents/README.md`, and the git hooks. Your `permissions.json`,
-`AGENTS.md` project region, `docs/`, and stack skills are left alone. Review the
-diff `upgrade` prints, then commit.
+`upgrade` refreshes the parts owned by the kit (the core skills, `.agents/README.md`,
+and the git hooks) and re-syncs the provider files. It leaves **your** content alone
+(your permissions, your `AGENTS.md` project section, your docs). Review the changes
+it reports, then commit.
 
-## 6. Presets (coming)
+---
 
-Presets add stack conventions on top of core. Once available, declare them in
-`agentkit.yaml`:
+## Uninstall
 
-```yaml
-presets:
-  - { name: preset-spring-boot, version: "0.1.0" }
+```sh
+pipx uninstall agentkit-core
 ```
 
-`init` then vendors the preset's `stack-*` skills, MCP overlay (e.g. postgres),
-and build/verify commands (resolve-then-vendor). With no preset, `init` gives you
-the agnostic core only (`core-init`, `core-consultant`, `core-orchestrator`).
+This removes the tool. Files already written into your projects stay (they are
+yours and self-contained).
 
-## Commands reference
+---
 
-| Command | Does |
-|---------|------|
+## Command reference
+
+| Command | What it does |
+|---------|--------------|
 | `agentkit init` | bootstrap a blank project or adapt an existing one |
-| `agentkit sync` | regenerate provider adapters from `.agents` (`--check` to verify only) |
-| `agentkit validate` | validate canonical context + adapter sync |
+| `agentkit sync` | regenerate provider files from `.agents` (add `--check` to verify only) |
+| `agentkit validate` | validate the canonical source and that provider files are in sync |
 | `agentkit upgrade` | refresh kit-managed files to the installed version |
+
+---
 
 ## Troubleshooting
 
-- **"agentkit: command not found"** — ensure `pipx`'s bin dir is on `PATH`
-  (`pipx ensurepath`), or use `npx agentkit ...`.
-- **npx run** needs Python 3.10+; the wrapper installs the Python package on first
-  use.
-- **pre-commit blocks the commit** — run `agentkit sync`, re-stage, commit again.
+**`agentkit: command not found`**
+pipx put the command in a folder that is not on your PATH yet. Run
+`pipx ensurepath`, then **close and reopen your terminal**. On macOS/Linux the
+folder is usually `~/.local/bin`.
+
+**`error: externally-managed-environment` (PEP 668)**
+You tried `pip install` directly. Use **pipx** instead (Step 2) — that is exactly
+what pipx is for.
+
+**`python3: command not found` or version below 3.10**
+Do Step 1. On Windows the command may be `python` instead of `python3`.
+
+**`git: command not found`**
+Install git: macOS `brew install git`, Debian/Ubuntu `sudo apt install git`,
+Windows <https://git-scm.com/download/win>.
+
+**A commit is blocked by the pre-commit hook**
+That means the generated files drifted from your edits. Run `agentkit sync`, then
+`git add -A` and commit again.
+
+**Behind a corporate proxy / no internet**
+pipx needs network access to install. Configure your proxy (e.g. `HTTPS_PROXY`) or
+install on a connected machine.

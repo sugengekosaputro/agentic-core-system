@@ -52,7 +52,7 @@ precise kit-managed vs project-owned manifest and merge rules; marked regions in
 `AGENTS.md` add a small authoring constraint.
 
 **Status of follow-ups**: engine parameterization, base MCP trim, configurable
-pre-push, the three core skills, CLI (init/validate/sync/upgrade), npx wrapper, and
-the init integration test are **done**. Pending: `preset-spring-boot` (minimal),
+pre-push, the three core skills, CLI (init/validate/sync/upgrade), and the init
+integration test are **done**. Pending: `preset-spring-boot` (minimal),
 `preset-angular`, `AGENTS.md` core-region auto-merge on upgrade, and the reserved
-`memory` feature.
+`memory` feature. Deferred: npm/npx distribution (Python/pipx only for now).

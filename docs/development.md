@@ -19,7 +19,6 @@ agentkit/
     provider-overrides.json, env.mcp.example, project.json, agentkit.yaml,
     githooks/, docs/, skills/core/{core-init,core-consultant,core-orchestrator}, skills/_authoring/
   schemas/               JSON Schemas for project.json and the manifest
-npm/                     thin npx wrapper that shims to the Python engine
 tests/                   hermetic engine unit tests + init integration tests
 docs/                    this documentation
 ```
@@ -59,8 +58,8 @@ scaffold agent context into the kit itself.
 
 ## Release
 
-1. Bump the version in `pyproject.toml`, `agentkit/__init__.py`, and `npm/package.json`.
+1. Bump the version in `pyproject.toml` and `agentkit/__init__.py`.
 2. Update `CHANGELOG.md`.
-3. Tag and (when publishing) build/publish: `python -m build` → PyPI; `npm publish`
-   for the wrapper. Until published, consumers install from a local path or git URL
-   (see [usage.md](usage.md#1-install-the-tool-once)).
+3. Tag and (when publishing) build/publish to PyPI: `python -m build`. Until
+   published, consumers install from a local path or git URL (see
+   [usage.md](usage.md#step-3--install-agentkit)).

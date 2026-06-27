@@ -7,9 +7,6 @@ dist/
 .venv/
 .eggs/
 
-# Node (npx wrapper)
-node_modules/
-
 # Local agent credentials / env
 .env
 .env.*

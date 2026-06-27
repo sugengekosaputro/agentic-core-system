@@ -37,7 +37,7 @@ single, versioned, provider-agnostic kit you drop into any project.
 ## Scope — MVP
 
 - `agentkit-core`: engine, validator, hooks, base governance, base MCP
-  (filesystem + context7), three core skills, CLI (pipx + npx). **Done.**
+  (filesystem + context7), three core skills, CLI (installed via pipx). **Done.**
 - `preset-spring-boot` (minimal) and `preset-angular` (frontend prototype). **Next.**
 
 ## Success criteria
@@ -50,6 +50,7 @@ single, versioned, provider-agnostic kit you drop into any project.
 ## Open questions
 
 - Memory scope (workspace vs agent vs both) — reserved in the manifest; not built.
-- npx zero-install ergonomics vs requiring Python.
+- npm/npx distribution — deferred; Python/pipx is the only supported path for now
+  (npx adds confusion for a Python tool without removing the Python dependency).
 
 See `docs/architecture/adr/0001-agentkit-architecture.md`.
