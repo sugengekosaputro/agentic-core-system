@@ -186,20 +186,33 @@ keeps all the provider files correct and in sync.
 ## Optional — the manifest (`agentkit.yaml`)
 
 If you create an `agentkit.yaml` file **before** running `agentkit init`, setup
-becomes fully automatic (no questions asked). Minimal example:
+becomes fully automatic (no questions asked) and can pull in **presets** — overlays
+that add stack skills, MCP servers, and build commands for you. Example:
 
 ```yaml
+presets:
+  - { name: preset-base, version: "0.1.0" }         # job-function skills (PM, BA, architect, developer)
+  - { name: preset-spring-boot, version: "0.1.0" }  # Spring Boot conventions + postgres + verify command
 project:
   name: my-app
-  language: java          # optional
-  framework: spring-boot  # optional
-  commands:
-    verify: ""            # a command to run before "git push", e.g. "./mvnw test"
+  language: java
+  framework: spring-boot
 memory:
   scope: both
 ```
 
-Without a manifest, `init` fills in sensible defaults based on the folder name.
+Bundled presets you can declare today:
+
+| Preset | Adds |
+|--------|------|
+| `preset-base` | `virtual-assistant-*` methodology skills (product-manager, business-analyst, architect, developer) |
+| `preset-spring-boot` | `stack-springboot` + `stack-database` skills, a postgres MCP server, a `./mvnw` verify gate |
+| `preset-angular` | `stack-angular` skill, an `npm run build` verify gate |
+
+`init` applies presets and then regenerates the provider adapters, so skills, MCP
+config, the `AGENTS.md` project section, and the pre-push gate all stay in sync.
+Without a manifest, `init` sets up the agnostic core only and fills defaults from the
+folder name.
 
 ---
 

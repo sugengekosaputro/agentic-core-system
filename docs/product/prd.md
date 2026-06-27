@@ -38,7 +38,8 @@ single, versioned, provider-agnostic kit you drop into any project.
 
 - `agentkit-core`: engine, validator, hooks, base governance, base MCP
   (filesystem + context7), three core skills, CLI (installed via pipx). **Done.**
-- `preset-spring-boot` (minimal) and `preset-angular` (frontend prototype). **Next.**
+- `preset-spring-boot` (minimal) and `preset-angular` (frontend prototype), plus
+  `preset-base` (job-function skills). **Done.**
 
 ## Success criteria
 

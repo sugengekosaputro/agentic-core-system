@@ -18,21 +18,27 @@ itself see [development.md](development.md).
 
 ## A new preset
 
-A preset is a distributable overlay that declares a `coreVersion` and adds skills,
-an MCP overlay, commands, and a profile. It must not modify core-managed files
-(the engine, the three core skills, the governance region of `AGENTS.md`).
+A preset is an overlay that adds skills, an MCP overlay, commands, and a profile on
+top of core. It must not modify core-managed files (the engine, the three core
+skills, the governance region of `AGENTS.md`). Applying a preset is **additive and
+idempotent**: skills are copied, MCP servers merged by name, env vars appended,
+commands merged, and a note inserted into the AGENTS.md project region — after which
+`agentkit sync` keeps every adapter consistent.
 
-Recommended preset layout:
+Bundled presets live under `agentkit/presets/<name>/`. Layout:
 
 ```
 preset-<stack>/
-  preset.yaml                 name, version, coreVersion
-  skills/stack-<stack>/SKILL.md
-  mcp.overlay.json            servers this stack needs (e.g. postgres)
-  agents.project.md           text merged into the AGENTS.md project region
-  commands.json               e.g. { "verify": "..." }
-  profile.yaml                official initializer + Context7 libs + conventions
+  preset.json          name, version, coreVersion, kind (base|stack), language, framework
+  skills/<name>/SKILL.md   skills to add (virtual-assistant-* or stack-*), one level deep
+  mcp.overlay.json     optional: servers this stack needs (merged by name)
+  env.mcp.additions    optional: env var names to document in .env.mcp.example
+  commands.json        optional: e.g. { "verify": "..." } -> project.json commands
+  agents.project.md    optional: text inserted into the AGENTS.md project region
+  profile.json         optional: official initializer + Context7 libs + conventions
 ```
 
-Best practices stay current by fetching official docs via Context7 at scaffold time
-rather than freezing framework code in templates.
+Metadata is JSON (the engine is standard-library only); the user-facing manifest
+(`agentkit.yaml`) is the only YAML. Best practices stay current by fetching official
+docs via Context7 at scaffold time rather than freezing framework code in templates.
+See `agentkit/presets/preset-spring-boot/` for a complete example.

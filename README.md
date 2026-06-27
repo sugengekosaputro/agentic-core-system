@@ -57,7 +57,9 @@ agentkit validate       # check sync + contracts
 | `agentkit upgrade` | refresh kit-managed files to the installed version |
 
 Full guide: [docs/usage.md](docs/usage.md). `init` reads an optional
-`agentkit.yaml` manifest for fully non-interactive setup.
+`agentkit.yaml` manifest for fully non-interactive setup, including **presets** —
+declare `preset-base`, `preset-spring-boot`, or `preset-angular` to add
+job-function and stack skills (plus their MCP/commands) automatically.
 
 ## Layers
 
