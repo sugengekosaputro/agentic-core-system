@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -37,6 +38,20 @@ class InitIntegrationTests(unittest.TestCase):
             init_mod.run(root)
             init_mod.run(root)  # second run must not error or change sync state
             self.assertEqual(generate_adapters.sync(root, check=True), [])
+
+    def test_init_works_for_a_non_code_project(self):
+        # general / research use: a folder with only notes, no build files
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            (root / "notes.md").write_text("# Research notes\n", encoding="utf-8")
+            init_mod.run(root)
+            self.assertEqual(validate_mod.validate(root), [])
+            proj = json.loads((root / ".agents/project.json").read_text())
+            self.assertEqual(proj["language"], "")
+            self.assertEqual(proj["framework"], "")
+            # the agnostic core skills are present and usable on their own
+            for skill in ("core-init", "core-consultant", "core-orchestrator"):
+                self.assertTrue((root / ".agents/skills" / skill / "SKILL.md").exists())
 
 
 if __name__ == "__main__":

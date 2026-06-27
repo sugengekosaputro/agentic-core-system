@@ -91,6 +91,33 @@ def _enable_hooks(root: Path) -> None:
         )
 
 
+def _marked_block(text: str, start_prefix: str, end_prefix: str) -> str | None:
+    """Return the full lines from the start-marker line through the end-marker line."""
+    start = text.find(start_prefix)
+    end = text.find(end_prefix)
+    if start == -1 or end == -1:
+        return None
+    line_start = text.rfind("\n", 0, start) + 1
+    line_end = text.find("\n", end)
+    line_end = len(text) if line_end == -1 else line_end + 1
+    return text[line_start:line_end]
+
+
+def _refresh_agents_core_region(root: Path, updated: list[str]) -> None:
+    """Replace the AGENTS.md core region with the template's, preserving the rest."""
+    target = root / "AGENTS.md"
+    if not target.exists():
+        return
+    template = (TEMPLATES / "AGENTS.base.md").read_text(encoding="utf-8")
+    new_core = _marked_block(template, "<!-- agentkit:core:start", "<!-- agentkit:core:end")
+    content = target.read_text(encoding="utf-8")
+    old_core = _marked_block(content, "<!-- agentkit:core:start", "<!-- agentkit:core:end")
+    if not new_core or not old_core or old_core == new_core:
+        return
+    target.write_text(content.replace(old_core, new_core, 1), encoding="utf-8")
+    updated.append("AGENTS.md (core region)")
+
+
 def run(root: Path) -> Path:
     """Bootstrap or adapt agent context in `root` (idempotent; never overwrites)."""
     root = Path(root).resolve()
@@ -152,6 +179,7 @@ def upgrade(root: Path) -> list[str]:
             _overwrite(skill_dir, root / ".agents/skills" / skill_dir.name)
     _overwrite(TEMPLATES / "githooks", root / ".githooks")
 
+    _refresh_agents_core_region(root, updated)
     _enable_hooks(root)
     generate_adapters.sync(root, check=False)
     return updated

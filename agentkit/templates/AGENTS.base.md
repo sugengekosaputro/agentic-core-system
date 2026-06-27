@@ -58,7 +58,8 @@ builds, local artifact generators, and small clear edits within the requested sc
 <!-- agentkit:project:start — project-owned; agentkit upgrade will not touch this region. -->
 ## Project Guidance
 
-_Add project-specific guidance here (module layout, build/test/run commands, stack
-notes). A preset may seed this section; keep it lean and move detail into
-`.agents/skills/stack-*/references/` so it loads on demand._
+_Add project-specific guidance here — whatever this project is: a codebase (any
+language/framework or native), a research/writing space (notes, `.md`), or general
+work. A preset may seed this section. Keep it lean; move detail into skill
+`references/` so it loads on demand._
 <!-- agentkit:project:end -->

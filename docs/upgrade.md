@@ -5,21 +5,24 @@ resolved versions and a `kitManaged` file list in `.agents/project.json`.
 
 ## What `agentkit upgrade` does
 
-- Refreshes **kit-managed** files only: the core skills
-  (`core-init`/`core-consultant`/`core-orchestrator`), `.agents/README.md`, and the
-  git hooks; then re-runs `sync`.
-- Leaves **project-owned** files untouched: `permissions.json`,
-  `provider-overrides.json`, `.agents/mcp/servers.json`, `AGENTS.md` (project
-  region), `docs/`, and `.agents/project.json`.
+- Refreshes **kit-managed** files: the core skills
+  (`core-init`/`core-consultant`/`core-orchestrator`), `.agents/README.md`, the git
+  hooks, and the **`AGENTS.md` core region** (the text between the `agentkit:core`
+  markers). Then it re-runs `sync`.
+- Leaves **project-owned** content untouched: the `AGENTS.md` **project region**,
+  `permissions.json`, `provider-overrides.json`, `.agents/mcp/servers.json`,
+  `docs/`, `.agents/project.json`, and any `virtual-assistant-*` / `stack-*` skills
+  (so your customizations and preset edits are safe).
+
+It prints the list of files it refreshed; review the diff, then commit.
 
 ## Resolve-then-vendor
 
 `init`/`upgrade` resolve versions and copy the result into the project, so the
-project is self-contained at runtime (no live dependency on the kit repo). Commit
-the result; review the diff that `upgrade` prints.
+project is self-contained at runtime (no live dependency on the kit repo).
 
-## Known limitation (v0.1.0)
+## Notes
 
-The `AGENTS.md` core region (between the `agentkit:core` markers) is not yet
-auto-merged on upgrade; update it manually if the core governance text changes.
-Tracked as a follow-up.
+- Preset-provided skills (`virtual-assistant-*`, `stack-*`) are project-owned and
+  are **not** auto-overwritten by `upgrade`, to protect your edits. Re-running
+  `agentkit init` re-applies missing preset pieces without clobbering existing files.

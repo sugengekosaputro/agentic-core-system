@@ -14,8 +14,9 @@ decision, use `core-consultant` instead.
 
 ## Intake (deterministic steps)
 1. Restate the concrete outcome in one sentence before opening files.
-2. Classify the work: feature/module · data/schema · auth/security · docs/agent ·
-   API/integration · pure inspection.
+2. Classify the work — **code** (feature/module, data/schema, auth/security,
+   API/integration), **non-code** (research, writing, docs, analysis, planning), or
+   **pure inspection**.
 3. Discover available skills from `.agents/project.json` (the `skills` map) and
    each `.agents/skills/*/SKILL.md` description; select only those that match.
 4. Inspect local files before planning (prefer ripgrep + targeted reads).

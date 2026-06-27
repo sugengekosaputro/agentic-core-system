@@ -15,10 +15,16 @@ adapters, enable hooks); use this playbook for the decisions.
 ## 1. Detect state
 Blank (no build files / no `src`) vs existing (has a stack).
 
-## 2. Detect stack (language/framework agnostic)
-`pom.xml`→Java/Maven, `build.gradle`→JVM/Gradle, `package.json`→Node,
-`go.mod`→Go, `pyproject.toml`/`requirements.txt`→Python, `Cargo.toml`→Rust.
-Record findings in `.agents/project.json`.
+## 2. Detect project type (language/framework agnostic)
+- **Code project**: `pom.xml`→Java/Maven, `build.gradle`→JVM/Gradle,
+  `package.json`→Node, `go.mod`→Go, `pyproject.toml`/`requirements.txt`→Python,
+  `Cargo.toml`→Rust — or native/other.
+- **Non-code project**: no build files (research/writing notes, `.md` docs, general
+  work). Leave `language`/`framework` empty in `.agents/project.json`.
+
+Record findings in `.agents/project.json`. The agnostic core (`core-init`,
+`core-consultant`, `core-orchestrator`) works for any project type; presets are
+optional and only needed when a stack's conventions help.
 
 ## 3. Choose presets & skills
 - Core ships only `core-*`. Select a **preset** for the detected stack

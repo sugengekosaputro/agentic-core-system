@@ -3,7 +3,10 @@
 This guide takes you from a fresh machine to using agentkit in your own projects,
 explaining each step (not just commands). agentkit is a small **Python**
 command-line tool. You install it once; then you run it inside any project, and it
-sets up that project's AI-agent context for you.
+sets up that project's AI-agent context for you. It works for **any kind of
+project** — a codebase (any language/framework or native), a research/writing space
+(`.md` notes), or general work; the agnostic core is enough on its own, and presets
+are optional.
 
 > You do **not** copy this repository into your project. The tool lives on your
 > machine; only its output (a `.agents/` folder + per-provider files) is written
