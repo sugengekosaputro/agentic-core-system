@@ -35,8 +35,8 @@ agentkit-core MVP is implemented and tested locally (not yet pushed/published).
 
 ## Pending / next
 
-1. **Publish** so consumers can install without a local clone (a maintainer action):
-   push to GitHub (then `pipx install git+URL`), later PyPI (`pipx install agentkit-core`).
+1. **Publish to PyPI** so consumers can `pipx install agentkit-core`. (Already on
+   GitHub: `pipx install git+https://github.com/sugengekosaputro/agentic-core-system.git`.)
 2. **More presets** as demand arises (e.g. node, go, python), each via the preset
    format in [authoring.md](authoring.md). Open-ended catalog work, not a gap.
 
