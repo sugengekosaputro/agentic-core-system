@@ -251,7 +251,11 @@ yours and self-contained).
 | `agentkit init` | bootstrap a blank project or adapt an existing one |
 | `agentkit sync` | regenerate provider files from `.agents` (add `--check` to verify only) |
 | `agentkit validate` | validate the canonical source and that provider files are in sync |
-| `agentkit upgrade` | refresh kit-managed files to the installed version |
+| `agentkit upgrade` | refresh kit-managed files to the installed version (`--refresh-presets` to also update preset skills) |
+
+agentkit also scaffolds `.agents/memory/journal.md` — a small, on-demand journal for
+multi-session continuity (not loaded every turn). Keep it terse; decisions go to
+ADRs, facts to `project.json`.
 
 ---
 

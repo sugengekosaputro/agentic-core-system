@@ -111,8 +111,12 @@ def _insert_project_region(agents_path: Path, text: str) -> None:
     agents_path.write_text(content[:inner_start] + new_inner + content[end:], encoding="utf-8")
 
 
-def apply_preset(root: Path, preset_dir: Path) -> list[str]:
-    """Apply one preset onto `root`'s canonical context. Returns what was applied."""
+def apply_preset(root: Path, preset_dir: Path, overwrite: bool = False) -> list[str]:
+    """Apply one preset onto `root`'s canonical context. Returns what was applied.
+
+    With ``overwrite=True`` (used by ``agentkit upgrade --refresh-presets``), existing
+    preset-provided skills are replaced with the bundled versions.
+    """
     root = Path(root).resolve()
     preset_dir = Path(preset_dir)
     meta = _read_json(preset_dir / "preset.json")
@@ -125,13 +129,15 @@ def apply_preset(root: Path, preset_dir: Path) -> list[str]:
     proj.setdefault("kit", {}).setdefault("presets", [])
     proj.setdefault("kitManaged", [])
 
-    # 1. skills (additive)
+    # 1. skills (additive; replaced when overwrite=True)
     skills_src = preset_dir / "skills"
     if skills_src.is_dir():
         for skill in sorted(skills_src.iterdir()):
             if not skill.is_dir():
                 continue
             dst = root / ".agents/skills" / skill.name
+            if dst.exists() and overwrite:
+                shutil.rmtree(dst)
             if not dst.exists():
                 shutil.copytree(skill, dst)
                 applied.append(f"skill:{skill.name}")

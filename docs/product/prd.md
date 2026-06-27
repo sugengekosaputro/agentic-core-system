@@ -50,7 +50,7 @@ single, versioned, provider-agnostic kit you drop into any project.
 
 ## Open questions
 
-- Memory scope (workspace vs agent vs both) — reserved in the manifest; not built.
+- Memory: **built** — workspace `.agents/memory/journal.md` (on-demand, bounded) + `memory.scope` in the manifest; agent-global scope documented for later.
 - npm/npx distribution — deferred; Python/pipx is the only supported path for now
   (npx adds confusion for a Python tool without removing the Python dependency).
 

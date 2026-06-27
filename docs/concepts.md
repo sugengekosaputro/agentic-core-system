@@ -41,3 +41,11 @@ Codex rules, opencode `permission.bash`, and a Kiro custom agent's
 
 `AGENTS.md` loads every turn, so `validate` enforces a size budget (≤ 7000 bytes).
 Detail belongs in skill `references/` (loaded on demand) and `docs/`.
+
+## Memory
+
+`.agents/memory/journal.md` carries cross-session working continuity (current state
++ an append-only log). It is **read on demand**, not loaded every turn, so it costs
+no tokens during normal work, and `validate` keeps it bounded. Decisions still go to
+ADRs and facts to `project.json` — the journal is for continuity and pointers only.
+`project.json` records the chosen `memory.scope` (workspace / agent / both).

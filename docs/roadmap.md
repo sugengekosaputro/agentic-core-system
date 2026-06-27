@@ -17,8 +17,8 @@ agentkit-core MVP is implemented and tested locally (not yet pushed/published).
   skills, base MCP = context7+filesystem, docs taxonomy, hooks, schemas).
 - **Bundled presets**: `preset-base` (virtual-assistant-*), `preset-spring-boot`
   (minimal), `preset-angular`.
-- **Tests**: `tests/` — 15 passing (engine units, init integration incl. non-code
-  project, preset apply, upgrade).
+- **Tests**: `tests/` — 16 passing (engine units, init integration incl. non-code
+  project + memory, preset apply, upgrade incl. core-region merge + preset refresh).
 - **Docs**: see [docs/README.md](README.md) (usage, authoring, development,
   concepts, upgrade, PRD, [ADR-0001](architecture/adr/0001-agentkit-architecture.md)).
 
@@ -35,15 +35,14 @@ agentkit-core MVP is implemented and tested locally (not yet pushed/published).
 
 ## Pending / next
 
-1. **Publish** so consumers can install without a local clone: push to GitHub
-   (then `pipx install git+URL`), later PyPI (`pipx install agentkit-core`).
-2. **`memory` feature** (deferred): workspace `.agents/memory/journal.md` +
-   optional agent-global; on-demand (not auto-loaded), size-bounded, pointer-based.
-   Decide write discipline before building.
-3. **Preset version upgrade**: `upgrade` currently refreshes core-managed files
-   only; add opt-in refresh of preset-provided skills/overlays to newer versions.
-4. **More presets** as needed (e.g. node, go, python), each via the preset format
-   in [authoring.md](authoring.md).
+1. **Publish** so consumers can install without a local clone (a maintainer action):
+   push to GitHub (then `pipx install git+URL`), later PyPI (`pipx install agentkit-core`).
+2. **More presets** as demand arises (e.g. node, go, python), each via the preset
+   format in [authoring.md](authoring.md). Open-ended catalog work, not a gap.
+
+Done since MVP: AGENTS.md core-region auto-merge on upgrade; the `memory` feature
+(`.agents/memory/journal.md`, on-demand + bounded); opt-in preset refresh
+(`agentkit upgrade --refresh-presets`).
 
 ## How to resume in a new chat
 

@@ -16,3 +16,7 @@ All notable changes to agentkit-core are documented here. This project follows
   (skills, MCP servers, env vars, commands, AGENTS.md project region). Bundled
   presets: `preset-base` (virtual-assistant-* methodology), `preset-spring-boot`
   (minimal), and `preset-angular`.
+- Memory: on-demand `.agents/memory/journal.md` (current state + log), size-bounded
+  by `validate`; `memory.scope` recorded in `project.json`.
+- `agentkit upgrade` merges the AGENTS.md core region and supports
+  `--refresh-presets` to update preset-provided skills.

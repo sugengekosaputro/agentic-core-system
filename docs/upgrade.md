@@ -23,6 +23,8 @@ project is self-contained at runtime (no live dependency on the kit repo).
 
 ## Notes
 
-- Preset-provided skills (`virtual-assistant-*`, `stack-*`) are project-owned and
-  are **not** auto-overwritten by `upgrade`, to protect your edits. Re-running
-  `agentkit init` re-applies missing preset pieces without clobbering existing files.
+- By default, preset-provided skills (`virtual-assistant-*`, `stack-*`) are
+  project-owned and **not** overwritten, to protect your edits. To pull newer
+  bundled preset versions, run `agentkit upgrade --refresh-presets` (re-applies the
+  recorded presets, overwriting their skills). Re-running `agentkit init` only adds
+  missing pieces.

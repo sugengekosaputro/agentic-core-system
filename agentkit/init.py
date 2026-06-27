@@ -131,6 +131,7 @@ def run(root: Path) -> Path:
     _copy_if_missing(TEMPLATES / "env.mcp.example", root / ".env.mcp.example")
     _copy_if_missing(TEMPLATES / "docs", root / "docs")
     _copy_if_missing(TEMPLATES / "githooks", root / ".githooks")
+    _copy_if_missing(TEMPLATES / "memory", root / ".agents/memory")
 
     for skill_dir in sorted(CORE_SKILLS.iterdir()):
         if skill_dir.is_dir():
@@ -154,11 +155,10 @@ def run(root: Path) -> Path:
     return root
 
 
-def upgrade(root: Path) -> list[str]:
-    """Refresh kit-managed files (core skills, .agents/README.md, hooks) and re-sync.
-
-    Project-owned files (permissions.json, provider-overrides.json, mcp servers,
-    AGENTS.md, docs/, project.json) are left untouched.
+def upgrade(root: Path, refresh_presets: bool = False) -> list[str]:
+    """Refresh kit-managed files (core skills, .agents/README.md, hooks, AGENTS.md
+    core region) and re-sync. With `refresh_presets`, also re-apply recorded presets
+    (overwriting preset-provided skills). Project-owned content is otherwise untouched.
     """
     root = Path(root).resolve()
     updated: list[str] = []
@@ -180,6 +180,18 @@ def upgrade(root: Path) -> list[str]:
     _overwrite(TEMPLATES / "githooks", root / ".githooks")
 
     _refresh_agents_core_region(root, updated)
+
+    if refresh_presets:
+        proj = root / ".agents/project.json"
+        if proj.exists():
+            recorded = (json.loads(proj.read_text(encoding="utf-8")).get("kit", {}) or {}).get("presets", [])
+            for entry in recorded or []:
+                name = entry.get("name") if isinstance(entry, dict) else entry
+                preset_dir = presets.resolve_preset(name) if name else None
+                if preset_dir is not None:
+                    presets.apply_preset(root, preset_dir, overwrite=True)
+                    updated.append(f"preset:{name}")
+
     _enable_hooks(root)
     generate_adapters.sync(root, check=False)
     return updated

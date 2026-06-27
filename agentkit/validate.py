@@ -31,6 +31,7 @@ SECRET_PATTERNS = [
 ]
 SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 AGENTS_MD_MAX_BYTES = 7000  # AGENTS.md loads every turn; keep it lean
+MEMORY_MAX_BYTES = 16000  # .agents/memory/journal.md is on-demand; keep it bounded
 
 
 def load_json(root: Path, relative_path: str) -> dict:
@@ -210,6 +211,17 @@ def check_context_budget(root: Path, errors: list[str]) -> None:
             )
 
 
+def check_memory_budget(root: Path, errors: list[str]) -> None:
+    journal = root / ".agents/memory/journal.md"
+    if journal.exists():
+        size = len(journal.read_bytes())
+        if size > MEMORY_MAX_BYTES:
+            errors.append(
+                f".agents/memory/journal.md is {size} bytes (> {MEMORY_MAX_BYTES}); "
+                "summarize or rotate it — keep memory terse and pointer-based."
+            )
+
+
 def validate(root: Path) -> list[str]:
     errors: list[str] = []
     run_generator_check(root, errors)
@@ -222,4 +234,5 @@ def validate(root: Path) -> list[str]:
     check_provider_overrides(root, errors)
     check_no_codex_skill_source(root, errors)
     check_context_budget(root, errors)
+    check_memory_budget(root, errors)
     return errors

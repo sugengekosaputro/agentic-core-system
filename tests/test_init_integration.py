@@ -24,6 +24,7 @@ class InitIntegrationTests(unittest.TestCase):
             self.assertTrue((root / "AGENTS.md").exists())
             self.assertTrue((root / ".agents/mcp/servers.json").exists())
             self.assertTrue((root / "docs/architecture/adr/template.md").exists())
+            self.assertTrue((root / ".agents/memory/journal.md").exists())
 
             # kiro agent named from the project
             self.assertTrue((root / ".kiro/agents" / f"{root.name}-maintainer.json").exists())

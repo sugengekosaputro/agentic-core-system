@@ -54,6 +54,7 @@ precise kit-managed vs project-owned manifest and merge rules; marked regions in
 **Status of follow-ups**: engine parameterization, base MCP trim, configurable
 pre-push, the three core skills, CLI (init/validate/sync/upgrade), the init
 integration test, the preset engine, and the bundled presets (`preset-base`,
-`preset-spring-boot`, `preset-angular`), and `AGENTS.md` core-region auto-merge on
-upgrade are **done**. Pending: the reserved `memory` feature. Deferred: npm/npx
-distribution (Python/pipx only for now).
+`preset-spring-boot`, `preset-angular`), `AGENTS.md` core-region auto-merge on
+upgrade, the `memory` journal, and opt-in preset refresh (`--refresh-presets`) are
+**done**. Pending: none blocking — publishing is a maintainer action and additional
+presets are open-ended. Deferred: npm/npx distribution (Python/pipx only for now).

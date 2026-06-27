@@ -21,7 +21,12 @@ def main(argv: list[str] | None = None) -> int:
     sync_p = sub.add_parser("sync", help="regenerate provider adapters from .agents")
     sync_p.add_argument("--check", action="store_true", help="check only; do not write")
     sub.add_parser("validate", help="validate canonical context + adapter sync")
-    sub.add_parser("upgrade", help="refresh kit-managed files to the installed version")
+    upgrade_p = sub.add_parser("upgrade", help="refresh kit-managed files to the installed version")
+    upgrade_p.add_argument(
+        "--refresh-presets",
+        action="store_true",
+        help="also re-apply recorded presets (overwrites preset-provided skills)",
+    )
 
     args = parser.parse_args(argv)
     root = Path.cwd()
@@ -52,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "upgrade":
-        updated = init_mod.upgrade(root)
+        updated = init_mod.upgrade(root, refresh_presets=args.refresh_presets)
         if updated:
             print("agentkit: refreshed kit-managed files:\n  " + "\n  ".join(updated))
         else:

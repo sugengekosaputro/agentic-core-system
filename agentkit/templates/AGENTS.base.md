@@ -47,6 +47,12 @@ Do not commit secrets, local credentials, or machine-specific paths; use environ
 variables or external configuration and keep safe defaults out of version control.
 Copy `.env.mcp.example` to `.env.mcp` for local agent/MCP credentials only.
 
+## Memory
+
+For multi-session continuity, read and append `.agents/memory/journal.md` **on
+demand** (it is not loaded every turn). Keep it terse; record decisions as ADRs and
+facts in `.agents/project.json`, not in the journal.
+
 ## Confirmation Priority
 
 Ask for explicit confirmation before Git history or remote operations, destructive
