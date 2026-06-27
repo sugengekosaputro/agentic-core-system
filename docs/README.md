@@ -2,6 +2,10 @@
 
 Grouped by audience.
 
+## Start here
+- [Roadmap & status](roadmap.md) — what's done, locked decisions, what's next, and
+  how to resume work (e.g. in a new chat session).
+
 ## Using agentkit (consumers / your project work)
 - [Usage](usage.md) — install, blank vs existing project, the daily
   edit → sync → validate loop, manifest, and upgrade.
