@@ -1,8 +1,20 @@
 # agentkit-core documentation
 
-- [Usage](usage.md) — how consumers use agentkit in their projects (blank/existing, daily loop, upgrade).
-- [Concepts](concepts.md) — the canonical → adapter model and the Core/Preset/Manifest layers.
-- [Authoring](authoring.md) — writing skills and presets.
+Grouped by audience.
+
+## Using agentkit (consumers / your project work)
+- [Usage](usage.md) — install, blank vs existing project, the daily
+  edit → sync → validate loop, manifest, and upgrade.
+
+## Building presets & skills (preset developers)
+- [Authoring](authoring.md) — writing new skills and presets on top of core.
+
+## Developing agentkit-core (maintainers)
+- [Development](development.md) — repo layout, dev setup, testing, release.
+  (See also [CONTRIBUTING.md](../CONTRIBUTING.md).)
+
+## Reference
+- [Concepts](concepts.md) — canonical → adapter model and the Core/Preset/Manifest layers.
 - [Upgrade](upgrade.md) — versioning and `agentkit upgrade`.
 - [PRD](product/prd.md) — product framing.
 - [ADR-0001](architecture/adr/0001-agentkit-architecture.md) — architecture decision.

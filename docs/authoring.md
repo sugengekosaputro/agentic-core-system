@@ -1,4 +1,8 @@
-# Authoring
+# Authoring presets & skills
+
+Audience: developers extending the kit with new **skills** or **presets** (on top of
+core). For using the kit see [usage.md](usage.md); for changing the core engine
+itself see [development.md](development.md).
 
 ## A new skill
 

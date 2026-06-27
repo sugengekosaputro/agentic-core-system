@@ -56,6 +56,21 @@ How the install path evolves:
 
 After install, `agentkit` is a real command you run inside any project (next steps).
 
+### Python (pipx) vs npm (npx)
+
+The engine is the Python package; the npm package is a thin wrapper that shims to
+it. They become available at different stages:
+
+| Stage | Python — `pipx`/`agentkit` | Node — `npx agentkit` |
+|-------|----------------------------|------------------------|
+| Local clone (now) | `pipx install /path` ✅ | run `node npm/bin/agentkit.js` after the engine is installed |
+| Pushed to GitHub | `pipx install git+https://…` ✅ | not on npm yet; install the engine via pipx, then the wrapper shims to it |
+| Published | `pipx install agentkit-core` ✅ | `npx agentkit …` ✅ (after `npm publish`) |
+
+So a GitHub-URL install covers the **Python CLI**. Full `npx agentkit` requires the
+wrapper to be published to npm; until then the wrapper only forwards to an
+already-installed Python engine (it prints install guidance if it can't find one).
+
 ## 2a. Blank project
 
 ```sh

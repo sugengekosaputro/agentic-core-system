@@ -69,8 +69,12 @@ Full guide: [docs/usage.md](docs/usage.md). `init` reads an optional
 
 ## Documentation
 
-See `docs/` — concepts, the architecture ADR, the authoring guide, and the
-upgrade guide.
+By audience (see [docs/](docs/README.md)):
+
+- **Using agentkit** (your projects) → [docs/usage.md](docs/usage.md)
+- **Building presets & skills** → [docs/authoring.md](docs/authoring.md)
+- **Developing the core** → [docs/development.md](docs/development.md) · [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Reference** → [concepts](docs/concepts.md), [upgrade](docs/upgrade.md), [PRD](docs/product/prd.md), [ADR-0001](docs/architecture/adr/0001-agentkit-architecture.md)
 
 ## License
 
