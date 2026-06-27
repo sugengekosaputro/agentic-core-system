@@ -1,5 +1,6 @@
 # agentkit-core documentation
 
+- [Usage](usage.md) — how consumers use agentkit in their projects (blank/existing, daily loop, upgrade).
 - [Concepts](concepts.md) — the canonical → adapter model and the Core/Preset/Manifest layers.
 - [Authoring](authoring.md) — writing skills and presets.
 - [Upgrade](upgrade.md) — versioning and `agentkit upgrade`.
