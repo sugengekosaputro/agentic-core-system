@@ -1,0 +1,46 @@
+#!/usr/bin/env sh
+# Source gate (pre-push), managed by agentkit-core; do not edit.
+#
+# Stack-agnostic: the gate command is read from `.agents/project.json` at
+# commands.verify. If none is configured, the gate is skipped. Presets set this
+# (e.g. spring-boot -> Maven ArchUnit; angular -> ng lint/test).
+#
+# Bypass:
+#   SKIP_BUILD_GATE=1 git push      # skip just this gate
+#   git push --no-verify            # skip all hooks
+set -e
+
+if [ "${SKIP_BUILD_GATE:-0}" = "1" ]; then
+  echo "pre-push: gate skipped (SKIP_BUILD_GATE=1)."
+  exit 0
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+gate=""
+if command -v python3 >/dev/null 2>&1; then
+  gate=$(python3 - <<'PY' 2>/dev/null || true
+import json
+try:
+    d = json.load(open(".agents/project.json"))
+    print((d.get("commands") or {}).get("verify", ""))
+except Exception:
+    pass
+PY
+)
+fi
+
+if [ -z "$gate" ]; then
+  echo "pre-push: no commands.verify configured; skipping gate."
+  exit 0
+fi
+
+echo "pre-push: running gate: $gate"
+if ! sh -c "$gate"; then
+  echo "" >&2
+  echo "pre-push BLOCKED: gate failed. Fix it, or bypass with SKIP_BUILD_GATE=1 git push." >&2
+  exit 1
+fi
+
+echo "pre-push: gate OK."

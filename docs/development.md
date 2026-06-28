@@ -27,6 +27,21 @@ The engine never hardcodes a project name: `generate_adapters.project_name()` re
 `.agents/project.json` (falling back to the directory name) and derives the path
 placeholder and the Kiro agent name from it.
 
+## This repo dogfoods itself
+
+agentkit-core uses agentkit on itself, so a fresh clone already has `AGENTS.md`,
+`.agents/`, and the provider adapters — no `init` needed to start maintaining it.
+
+Important rule: the **source** of what the kit ships is `agentkit/templates/**` and
+`agentkit/presets/**`. The repo's own `.agents/**` is **vendored** from those
+templates. So:
+
+- Edit the **template** (e.g. `agentkit/templates/skills/core/...`,
+  `agentkit/templates/AGENTS.base.md`) — not the vendored copy under `.agents/`.
+- Run `agentkit upgrade` to re-sync `.agents/**`, then `agentkit sync` / `validate`.
+- `tests/test_dogfood_sync.py` fails if the vendored `.agents` core skills (or
+  `.agents/README.md`) drift from the templates, enforcing the rule.
+
 ## Dev setup
 
 ```sh

@@ -20,3 +20,5 @@ All notable changes to agentkit-core are documented here. This project follows
   by `validate`; `memory.scope` recorded in `project.json`.
 - `agentkit upgrade` merges the AGENTS.md core region and supports
   `--refresh-presets` to update preset-provided skills.
+- The repo dogfoods itself: committed `AGENTS.md` + `.agents/` + provider adapters
+  (vendored from templates; kept in sync by `agentkit upgrade` and a dogfood test).

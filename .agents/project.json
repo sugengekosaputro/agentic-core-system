@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "name": "agentic-core-system",
+  "description": "agentkit-core: the agent context kit, dogfooding itself.",
+  "language": "python",
+  "framework": "",
+  "buildTool": "hatchling",
+  "commands": {
+    "verify": "python3 -m unittest discover -s tests"
+  },
+  "kit": {
+    "core": "0.1.0",
+    "presets": []
+  },
+  "skills": {
+    "core": [
+      "core-init",
+      "core-consultant",
+      "core-orchestrator"
+    ],
+    "virtual-assistant": [],
+    "stack": []
+  },
+  "memory": {
+    "scope": "both"
+  },
+  "kitManaged": [
+    ".agents/README.md",
+    ".agents/skills/core-init",
+    ".agents/skills/core-consultant",
+    ".agents/skills/core-orchestrator",
+    ".githooks"
+  ]
+}
