@@ -2,15 +2,15 @@
 # `init` resolves this into .agents/project.json (machine-maintained state).
 
 core:
-  version: "0.1.0"
+  version: "0.2.0"
 
-# Presets to layer on top of core. preset-base supplies the reusable
-# virtual-assistant-* methodology; a stack preset supplies stack-* skills.
+# Presets to layer on top of core. Stack presets supply stack-* skills; workflow
+# presets supply workflow-* task instructions.
 presets:
-  - name: preset-base
-    version: "0.1.0"
   # - name: preset-spring-boot
-  #   version: "0.1.0"
+  #   version: "0.2.0"
+  # - name: preset-angular
+  #   version: "0.2.0"
 
 project:
   name: my-project

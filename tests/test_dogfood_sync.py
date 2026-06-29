@@ -14,18 +14,27 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 class DogfoodSyncTests(unittest.TestCase):
-    def test_core_skills_match_templates(self):
-        template_core = REPO / "agentkit/templates/skills/core"
-        for skill_dir in sorted(template_core.iterdir()):
-            if not skill_dir.is_dir():
-                continue
-            src = skill_dir / "SKILL.md"
-            vendored = REPO / ".agents/skills" / skill_dir.name / "SKILL.md"
-            self.assertTrue(vendored.exists(), f"{vendored} missing — run `agentkit upgrade`")
+    def test_default_template_project_skills_are_empty(self):
+        self.assertEqual(list((REPO / "agentkit/templates/skills").glob("core/*/SKILL.md")), [])
+
+    def test_dogfood_workflow_skills_match_standard_preset(self):
+        expected = [
+            "workflow-explore",
+            "workflow-implement",
+            "workflow-plan",
+            "workflow-review",
+        ]
+        self.assertEqual(
+            sorted(p.parent.name for p in (REPO / ".agents/skills").glob("*/SKILL.md")),
+            expected,
+        )
+        for name in expected:
             self.assertEqual(
-                vendored.read_text(encoding="utf-8"),
-                src.read_text(encoding="utf-8"),
-                f"{skill_dir.name} drifted from its template — edit the template, then `agentkit upgrade`",
+                (REPO / f".agents/skills/{name}/SKILL.md").read_text(encoding="utf-8"),
+                (
+                    REPO
+                    / f"agentkit/presets/preset-workflow-standard/skills/{name}/SKILL.md"
+                ).read_text(encoding="utf-8"),
             )
 
     def test_agents_readme_matches_template(self):

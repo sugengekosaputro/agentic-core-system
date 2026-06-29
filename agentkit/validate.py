@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from . import generate_adapters
+from . import presets as presets_mod
 
 CHECK_PATHS = [
     "AGENTS.md",
@@ -32,6 +33,7 @@ SECRET_PATTERNS = [
 SKILL_NAME_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 AGENTS_MD_MAX_BYTES = 7000  # AGENTS.md loads every turn; keep it lean
 MEMORY_MAX_BYTES = 16000  # .agents/memory/journal.md is on-demand; keep it bounded
+SKILL_GROUPS = ("workflow", "stack")
 
 
 def load_json(root: Path, relative_path: str) -> dict:
@@ -162,6 +164,31 @@ def check_canonical_schema(root: Path, errors: list[str]) -> None:
             for key in ("name", "skills"):
                 if key not in proj:
                     errors.append(f".agents/project.json missing '{key}'")
+            skills = proj.get("skills")
+            if isinstance(skills, dict):
+                for group in SKILL_GROUPS:
+                    if not isinstance(skills.get(group), list):
+                        errors.append(f".agents/project.json: skills.{group} must be a list")
+                for group in skills:
+                    if group not in SKILL_GROUPS:
+                        errors.append(
+                            f".agents/project.json: unsupported skills group '{group}'; "
+                            "expected only workflow and stack"
+                        )
+                for group in SKILL_GROUPS:
+                    for name in skills.get(group, []):
+                        try:
+                            expected = presets_mod.skill_group(name)
+                        except ValueError as exc:
+                            errors.append(f".agents/project.json: {exc}")
+                            continue
+                        if expected != group:
+                            errors.append(
+                                f".agents/project.json: skill '{name}' belongs in skills.{expected}, "
+                                f"not skills.{group}"
+                            )
+            elif "skills" in proj:
+                errors.append(".agents/project.json: skills must be an object")
         except (OSError, ValueError) as exc:
             errors.append(f".agents/project.json invalid: {exc}")
 
@@ -198,6 +225,10 @@ def check_skill_name_format(root: Path, errors: list[str]) -> None:
             errors.append(f"skill name not lowercase-hyphen: {name}")
         if name != dir_name:
             errors.append(f"skill name '{name}' does not match directory '{dir_name}'")
+        try:
+            presets_mod.skill_group(name)
+        except ValueError as exc:
+            errors.append(f"{skill_file.relative_to(root)}: {exc}")
 
 
 def check_context_budget(root: Path, errors: list[str]) -> None:

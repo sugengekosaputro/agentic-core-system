@@ -1,9 +1,9 @@
 # ADR-0001: agentkit layered architecture (Core / Preset / Manifest)
 
-> Status: accepted
+> Status: superseded by ADR-0002
 > Date: 2026-06-27
 > Supersedes: -
-> Superseded-by: -
+> Superseded-by: ADR-0002
 
 ## Context
 

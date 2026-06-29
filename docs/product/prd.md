@@ -21,11 +21,12 @@ single, versioned, provider-agnostic kit you drop into any project.
 ## Goals
 
 1. One canonical source → generated provider adapters.
-2. A small agnostic Core (`core-init`, `core-consultant`, `core-orchestrator`).
-3. Opt-in role/stack skills, scaffolded per project from presets + a manifest.
+2. A small agnostic Core for bootstrap, sync, validation, memory, docs, MCP, and permissions.
+3. Opt-in workflow/stack skills, scaffolded per project from presets + a manifest.
 4. Safe, versioned upgrades that touch only kit-managed files.
 5. Clear, unified docs that double as onboarding.
-6. Extensible by design (schemas, templates, tests, validation).
+6. Provider-specific delegation where formats are verified, kept separate from skills.
+7. Extensible by design (schemas, templates, tests, validation).
 
 ## Non-goals
 
@@ -37,15 +38,15 @@ single, versioned, provider-agnostic kit you drop into any project.
 ## Scope — MVP
 
 - `agentkit-core`: engine, validator, hooks, base governance, base MCP
-  (filesystem + context7), three core skills, CLI (installed via pipx). **Done.**
-- `preset-spring-boot` (minimal) and `preset-angular` (frontend prototype), plus
-  `preset-base` (job-function skills). **Done.**
+  (filesystem + context7), CLI (installed via pipx). **Done.**
+- `preset-spring-boot` (minimal) and `preset-angular` (frontend prototype). **Done.**
+- `preset-workflow-standard` and Codex custom-agent generation. **Done.**
 
 ## Success criteria
 
 - `init` on a blank or existing project yields working, in-sync adapters for all
   providers (validator + sync-check green). ✓ verified by the init integration test.
-- Core ships only agnostic skills; stack concerns live in presets.
+- Core ships no default project-local skills; workflow and stack concerns live in presets.
 - `upgrade` updates kit-managed files while leaving project content untouched.
 
 ## Open questions

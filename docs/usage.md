@@ -5,8 +5,8 @@ explaining each step (not just commands). agentkit is a small **Python**
 command-line tool. You install it once; then you run it inside any project, and it
 sets up that project's AI-agent context for you. It works for **any kind of
 project** — a codebase (any language/framework or native), a research/writing space
-(`.md` notes), or general work; the agnostic core is enough on its own, and presets
-are optional.
+(`.md` notes), or general work. The core is enough on its own; workflow and stack
+presets are optional.
 
 > You do **not** copy this repository into your project. The tool lives on your
 > machine; only its output (a `.agents/` folder + per-provider files) is written
@@ -22,6 +22,10 @@ After setup you will have a command called `agentkit`. Inside any project you ca
 - `agentkit sync` — regenerate the per-provider files after you change the source.
 - `agentkit validate` — check everything is consistent.
 - `agentkit upgrade` — pull in newer kit files later.
+- `agentkit presets list` / `agentkit presets add <name>` — discover and apply presets.
+- `agentkit skills list` — show installed workflow/stack skills.
+- `agentkit agents generate --provider codex` — generate project-scoped Codex
+  custom agents for delegation (`--check` verifies drift).
 
 ---
 
@@ -113,7 +117,7 @@ pipx install agentkit-core
 Verify the command is available:
 
 ```sh
-agentkit --version        # expect: agentkit 0.1.0
+agentkit --version        # expect: agentkit 0.2.0
 ```
 
 If you get "command not found", see [Troubleshooting](#troubleshooting).
@@ -132,12 +136,12 @@ agentkit init          # set up the agent context
 `agentkit init` creates, in `my-app/`:
 
 - `.agents/` — the **canonical source** you edit: `permissions.json`, `mcp/servers.json`,
-  `README.md`, `project.json`, and `skills/` (the core skills core-init,
-  core-consultant, core-orchestrator).
+  `README.md`, `project.json`, and `skills/` (empty until you add workflow/stack
+  skills).
 - `AGENTS.md` — the top-level instruction file every provider reads.
 - Generated provider files (do **not** edit these by hand): `.kiro/`, `.claude/` +
   `CLAUDE.md`, `.codex/`, `opencode.json`, `.antigravity/`, `.mcp.json`.
-- `docs/` — a documentation skeleton organized by job function.
+- `docs/` — a documentation skeleton organized by artifact type.
 - `.githooks/` — checks that run automatically when you commit/push.
 
 Then build your actual application with its normal tool — agentkit does not generate
@@ -156,9 +160,8 @@ agentkit validate
 
 `init` is idempotent — running it again changes nothing it has already created. If
 your project already has scattered AI config (a `CLAUDE.md`, a `.cursor/` folder,
-ad-hoc MCP settings), ask your agent to follow the `core-init` skill, which guides
-auditing and folding those into the canonical `.agents/` (it will not delete
-anything without your approval).
+ad-hoc MCP settings), ask your agent to audit those files and fold durable guidance
+into the canonical `.agents/` (it should not delete anything without your approval).
 
 ---
 
@@ -194,8 +197,7 @@ that add stack skills, MCP servers, and build commands for you. Example:
 
 ```yaml
 presets:
-  - { name: preset-base, version: "0.1.0" }         # job-function skills (PM, BA, architect, developer)
-  - { name: preset-spring-boot, version: "0.1.0" }  # Spring Boot conventions + postgres + verify command
+  - { name: preset-spring-boot, version: "0.2.0" }  # Spring Boot conventions + postgres + verify command
 project:
   name: my-app
   language: java
@@ -208,14 +210,35 @@ Bundled presets you can declare today:
 
 | Preset | Adds |
 |--------|------|
-| `preset-base` | `virtual-assistant-*` methodology skills (product-manager, business-analyst, architect, developer) |
 | `preset-spring-boot` | `stack-springboot` + `stack-database` skills, a postgres MCP server, a `./mvnw` verify gate |
 | `preset-angular` | `stack-angular` skill, an `npm run build` verify gate |
+| `preset-workflow-standard` | `workflow-explore`, `workflow-plan`, `workflow-implement`, and `workflow-review` |
 
 `init` applies presets and then regenerates the provider adapters, so skills, MCP
 config, the `AGENTS.md` project section, and the pre-push gate all stay in sync.
 Without a manifest, `init` sets up the agnostic core only and fills defaults from the
 folder name.
+
+You can also skip a manifest and apply presets directly:
+
+```sh
+agentkit init --preset preset-angular
+agentkit presets list
+agentkit presets add preset-spring-boot
+agentkit skills list
+```
+
+For Codex subagent workflows, generate project-scoped custom agents after init:
+
+```sh
+agentkit agents generate --provider codex
+agentkit agents generate --provider codex --check
+```
+
+This writes `.codex/agents/explorer.toml`, `planner.toml`, `implementer.toml`,
+and `reviewer.toml`. Existing unmarked files are left untouched; Claude and Kiro
+delegation generators are intentionally unsupported until their formats are
+verified separately.
 
 ---
 
@@ -226,10 +249,10 @@ pipx upgrade agentkit-core      # get the newer tool
 cd my-app && agentkit upgrade   # refresh only the kit-managed files
 ```
 
-`upgrade` refreshes the parts owned by the kit (the core skills, `.agents/README.md`,
-and the git hooks) and re-syncs the provider files. It leaves **your** content alone
-(your permissions, your `AGENTS.md` project section, your docs). Review the changes
-it reports, then commit.
+`upgrade` refreshes the parts owned by the kit (`.agents/README.md`, the git hooks,
+and the `AGENTS.md` core region) and re-syncs the provider files. It leaves
+**your** content alone (your permissions, your `AGENTS.md` project section, your
+docs, your skills). Review the changes it reports, then commit.
 
 ---
 
@@ -249,9 +272,15 @@ yours and self-contained).
 | Command | What it does |
 |---------|--------------|
 | `agentkit init` | bootstrap a blank project or adapt an existing one |
+| `agentkit init --preset <name>` | bootstrap and apply one or more presets |
 | `agentkit sync` | regenerate provider files from `.agents` (add `--check` to verify only) |
 | `agentkit validate` | validate the canonical source and that provider files are in sync |
 | `agentkit upgrade` | refresh kit-managed files to the installed version (`--refresh-presets` to also update preset skills) |
+| `agentkit presets list` | show bundled presets |
+| `agentkit presets add <name>` | apply a preset to an initialized project, then sync |
+| `agentkit skills list` | show installed workflow and stack skills |
+| `agentkit manifest new --preset <name>` | write a starter `agentkit.yaml` |
+| `agentkit agents generate --provider codex` | write project-scoped Codex custom agents (`--check` to verify only) |
 
 agentkit also scaffolds `.agents/memory/journal.md` — a small, on-demand journal for
 multi-session continuity (not loaded every turn). Keep it terse; decisions go to

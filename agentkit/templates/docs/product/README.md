@@ -1,6 +1,5 @@
 # Product
 
-- **Virtual Assistant:** Product Manager (`virtual-assistant-product-manager`)
 - **Purpose:** Define *what* is being built and *why* — problem, users, goals,
   scope, success criteria. The most upstream documents.
 - **Document types:** PRD, product brief, roadmap.

@@ -1,7 +1,0 @@
-{
-  "name": "preset-base",
-  "version": "0.1.0",
-  "coreVersion": "0.1.0",
-  "kind": "base",
-  "description": "Reusable job-function methodology (virtual-assistant-*): product manager, business analyst, architect, developer."
-}

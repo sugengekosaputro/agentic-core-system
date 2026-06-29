@@ -21,17 +21,14 @@ general repository instructions from `AGENTS.md`.
 Skills live flat at `.agents/skills/<name>/SKILL.md`. Discovery is one level deep,
 so categories are expressed by a name prefix, never by subdirectories:
 
-- `core-*` — how the agent itself works (shipped by agentkit-core, reusable):
-  `core-init`, `core-consultant`, `core-orchestrator`.
-- `virtual-assistant-*` — job-function methodology (from `preset-base`):
-  `virtual-assistant-product-manager`, `-business-analyst`, `-architect`,
-  `-developer`, `-qa`, `-security`, `-devops`.
-- `stack-*` — project/technology conventions (from a stack preset): e.g.
+- `workflow-*` - reusable task workflows, such as discovery, planning,
+  implementation, review, migration, or release checklists.
+- `stack-*` - project/technology conventions (from a stack preset): e.g.
   `stack-springboot`, `stack-angular`.
 
 Naming rule: `<layer>-<purpose>`, lowercase with single hyphens, matching the skill
-directory name. `<purpose>` must be immediately understandable — a real job title,
-a real technology name, or a plain verb/noun. Avoid coined jargon and project-name
+directory name. `<purpose>` must be immediately understandable - a task, a real
+technology name, or a plain verb/noun. Avoid coined jargon and project-name
 prefixes. Keep names short.
 
 ## Skill Metadata
@@ -40,18 +37,18 @@ prefixes. Keep names short.
 opencode, ignored safely elsewhere):
 
     metadata:
-      layer: virtual-assistant     # core | virtual-assistant | stack
-      sdlc_stage: analysis         # discovery|analysis|design|build|test|secure|deploy|operate
+      layer: workflow              # workflow | stack
+      sdlc_stage: delivery         # discovery|design|delivery|test|secure|deploy|operate
       consumes: docs/product       # artifacts this skill reads
       produces: docs/requirements  # artifacts this skill writes
 
-Output per layer: `core-*` produces decisions/behavior, `virtual-assistant-*`
-produces documents under `docs/`, `stack-*` produces code/config.
+Output per layer: `workflow-*` produces repeatable task guidance and artifacts;
+`stack-*` produces technology-specific code/config guidance.
 
 ## Project Artifacts (`docs/`)
 
-Deliverables are NOT skills; they live under `docs/`, organized by owning
-virtual-assistant. See `docs/README.md` for the full map.
+Deliverables are NOT skills; they live under `docs/`, organized by artifact type.
+See `docs/README.md` for the full map.
 
 ## ADR Convention
 

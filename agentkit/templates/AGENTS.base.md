@@ -21,18 +21,21 @@ Project-local skills live under `.agents/skills` and are exposed to providers vi
 generated symlinks (`.kiro/skills`, `.claude/skills`) and discovered natively by
 opencode. They are grouped by name prefix (see `.agents/README.md`):
 
-- `core-*` — agent operations: `core-init` (bootstrap/adapt), `core-consultant`
-  (reason/recommend before a decision), `core-orchestrator` (route/plan/execute).
-- `virtual-assistant-*` — job-function methodology (BA, architect, developer, …).
-- `stack-*` — technology conventions for this project's stack.
+- `workflow-*` - reusable task workflows, such as discovery, planning,
+  implementation, review, or release checklists.
+- `stack-*` - technology conventions for this project's language, framework, or
+  platform.
 
 ## Intake
 
-For a broad or unclear request, start with `core-consultant` to frame the problem
-and decide, then `core-orchestrator` to route to the right skill and plan. For a
-small, clear task, pick the relevant skill and proceed. If a relevant MCP/tool is
-unavailable, fall back to local inspection, local commands, focused tests, or state
-the blocker.
+For a broad or unclear request, first frame the problem, options, trade-offs, and a
+clear recommendation before editing. Once the outcome is known, inspect local files,
+choose the relevant `workflow-*` and `stack-*` skills, make a short plan for
+cross-module work, and execute through verification. For a small, clear task, pick
+the relevant skill and proceed directly.
+
+If a relevant MCP/tool is unavailable, fall back to local inspection, local
+commands, focused tests, or state the blocker.
 
 ## Context7 Documentation
 

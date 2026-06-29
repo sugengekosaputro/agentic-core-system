@@ -21,4 +21,5 @@ metadata:
 Fetch current Spring Boot / Spring docs via Context7 before relying on memory.
 
 ## Hand-offs
-Schema/persistence → `stack-database`. General method → `virtual-assistant-developer`.
+Schema/persistence → `stack-database`. Pair with any installed `workflow-*` skill
+for project-specific delivery method.

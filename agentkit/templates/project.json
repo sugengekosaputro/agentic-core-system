@@ -6,18 +6,14 @@
   "framework": "",
   "buildTool": "",
   "commands": { "verify": "" },
-  "kit": { "core": "0.1.0", "presets": [] },
+  "kit": { "core": "0.2.0", "presets": [] },
   "skills": {
-    "core": ["core-init", "core-consultant", "core-orchestrator"],
-    "virtual-assistant": [],
+    "workflow": [],
     "stack": []
   },
   "memory": { "scope": "both" },
   "kitManaged": [
     ".agents/README.md",
-    ".agents/skills/core-init",
-    ".agents/skills/core-consultant",
-    ".agents/skills/core-orchestrator",
     ".githooks"
   ]
 }

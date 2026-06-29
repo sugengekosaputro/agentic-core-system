@@ -1,7 +1,7 @@
 # Developing agentkit-core
 
 Audience: maintainers/contributors changing **the kit itself** (engine, templates,
-core skills, schemas). This is distinct from:
+presets, schemas). This is distinct from:
 
 - [Using agentkit](usage.md) — consuming the kit in your own projects.
 - [Authoring presets & skills](authoring.md) — building presets/skills on top of core.
@@ -11,13 +11,14 @@ core skills, schemas). This is distinct from:
 ```
 agentkit/
   generate_adapters.py   engine: canonical .agents -> provider adapters (parameterized by target root)
+  agents.py              Codex custom-agent generator (`agentkit agents generate`)
   validate.py            canonical contracts + adapter sync checks
   init.py                `init` (scaffold/adapt) and `upgrade` (refresh kit-managed files)
-  cli.py                 CLI entrypoint (init|sync|validate|upgrade)
+  cli.py                 CLI entrypoint
   templates/             everything vendored into a target project on `init`
     AGENTS.base.md, agents-README.md, permissions.json, mcp.base.json,
     provider-overrides.json, env.mcp.example, project.json, agentkit.yaml,
-    githooks/, docs/, skills/core/{core-init,core-consultant,core-orchestrator}, skills/_authoring/
+    githooks/, docs/, skills/_authoring/
   schemas/               JSON Schemas for project.json and the manifest
 tests/                   hermetic engine unit tests + init integration tests
 docs/                    this documentation
@@ -36,11 +37,11 @@ Important rule: the **source** of what the kit ships is `agentkit/templates/**` 
 `agentkit/presets/**`. The repo's own `.agents/**` is **vendored** from those
 templates. So:
 
-- Edit the **template** (e.g. `agentkit/templates/skills/core/...`,
-  `agentkit/templates/AGENTS.base.md`) — not the vendored copy under `.agents/`.
+- Edit the **template** (e.g. `agentkit/templates/AGENTS.base.md` or
+  `agentkit/templates/agents-README.md`) — not the vendored copy under `.agents/`.
 - Run `agentkit upgrade` to re-sync `.agents/**`, then `agentkit sync` / `validate`.
-- `tests/test_dogfood_sync.py` fails if the vendored `.agents` core skills (or
-  `.agents/README.md`) drift from the templates, enforcing the rule.
+- `tests/test_dogfood_sync.py` fails if the vendored `.agents/README.md` drifts
+  from the template or default project skills reappear.
 
 ## Dev setup
 

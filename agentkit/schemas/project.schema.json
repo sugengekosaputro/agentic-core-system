@@ -25,10 +25,10 @@
     },
     "skills": {
       "type": "object",
-      "required": ["core", "virtual-assistant", "stack"],
+      "required": ["workflow", "stack"],
+      "additionalProperties": false,
       "properties": {
-        "core": { "type": "array", "items": { "type": "string" } },
-        "virtual-assistant": { "type": "array", "items": { "type": "string" } },
+        "workflow": { "type": "array", "items": { "type": "string" } },
         "stack": { "type": "array", "items": { "type": "string" } }
       }
     },

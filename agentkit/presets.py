@@ -9,7 +9,7 @@ local directory. Applying a preset is additive and idempotent:
 - ``env.mcp.additions``     -> variable names appended to ``.env.mcp.example``
 - ``commands.json``         -> merged into ``.agents/project.json`` ``commands``
 - ``agents.project.md``     -> inserted into the AGENTS.md project region
-- ``preset.json``           -> recorded in ``project.json`` (presets + skill layers)
+- ``preset.json``           -> recorded in ``project.json`` (presets + skill groups)
 
 Metadata uses JSON (not YAML) so the engine stays standard-library only.
 """
@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import shutil
 from pathlib import Path
+from typing import Any
 
 PRESETS_DIR = Path(__file__).parent / "presets"
 
@@ -30,7 +31,30 @@ _PLACEHOLDER = "_Add project-specific guidance here"
 def available_presets() -> list[str]:
     if not PRESETS_DIR.exists():
         return []
-    return sorted(p.name for p in PRESETS_DIR.iterdir() if p.is_dir())
+    return sorted(p.name for p in PRESETS_DIR.iterdir() if (p / "preset.json").is_file())
+
+
+def preset_info(preset_dir: Path) -> dict[str, Any]:
+    """Return normalized metadata for a preset directory."""
+    meta = _read_json(preset_dir / "preset.json")
+    return {
+        "name": meta.get("name") or preset_dir.name,
+        "version": meta.get("version", ""),
+        "coreVersion": meta.get("coreVersion", ""),
+        "kind": meta.get("kind", ""),
+        "language": meta.get("language", ""),
+        "framework": meta.get("framework", ""),
+        "description": meta.get("description", ""),
+    }
+
+
+def available_preset_infos() -> list[dict[str, Any]]:
+    infos: list[dict[str, Any]] = []
+    for name in available_presets():
+        preset_dir = resolve_preset(name)
+        if preset_dir is not None:
+            infos.append(preset_info(preset_dir))
+    return infos
 
 
 def resolve_preset(name_or_path: str) -> Path | None:
@@ -52,14 +76,24 @@ def _write_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
-def _skill_layer(name: str) -> str:
-    if name.startswith("virtual-assistant-"):
-        return "virtual-assistant"
+def skill_group(name: str) -> str:
+    """Return the project.json skill group for a skill name, or raise clearly."""
+    if name.startswith("workflow-"):
+        return "workflow"
     if name.startswith("stack-"):
         return "stack"
     if name.startswith("core-"):
-        return "core"
-    return "stack"
+        raise ValueError(
+            f"core-* project skills are no longer supported: {name}. "
+            "Move durable guidance into AGENTS.md/docs or rename reusable task "
+            "workflows to workflow-*."
+        )
+    if name.startswith("virtual-assistant-"):
+        raise ValueError(
+            f"virtual-assistant-* skills are no longer supported: {name}. "
+            "Rename reusable task workflows to workflow-* or stack conventions to stack-*."
+        )
+    raise ValueError(f"unsupported skill prefix for {name}: expected workflow-* or stack-*")
 
 
 def _merge_mcp(root: Path, overlay: Path, applied: list[str]) -> None:
@@ -124,7 +158,9 @@ def apply_preset(root: Path, preset_dir: Path, overwrite: bool = False) -> list[
 
     proj_path = root / ".agents/project.json"
     proj = _read_json(proj_path)
-    proj.setdefault("skills", {"core": [], "virtual-assistant": [], "stack": []})
+    proj.setdefault("skills", {})
+    proj["skills"].setdefault("workflow", [])
+    proj["skills"].setdefault("stack", [])
     proj.setdefault("commands", {})
     proj.setdefault("kit", {}).setdefault("presets", [])
     proj.setdefault("kitManaged", [])
@@ -132,7 +168,9 @@ def apply_preset(root: Path, preset_dir: Path, overwrite: bool = False) -> list[
     # 1. skills (additive; replaced when overwrite=True)
     skills_src = preset_dir / "skills"
     if skills_src.is_dir():
-        for skill in sorted(skills_src.iterdir()):
+        skill_dirs = [skill for skill in sorted(skills_src.iterdir()) if skill.is_dir()]
+        skill_groups = {skill.name: skill_group(skill.name) for skill in skill_dirs}
+        for skill in skill_dirs:
             if not skill.is_dir():
                 continue
             dst = root / ".agents/skills" / skill.name
@@ -141,9 +179,9 @@ def apply_preset(root: Path, preset_dir: Path, overwrite: bool = False) -> list[
             if not dst.exists():
                 shutil.copytree(skill, dst)
                 applied.append(f"skill:{skill.name}")
-            layer = _skill_layer(skill.name)
-            if skill.name not in proj["skills"].setdefault(layer, []):
-                proj["skills"][layer].append(skill.name)
+            group = skill_groups[skill.name]
+            if skill.name not in proj["skills"].setdefault(group, []):
+                proj["skills"][group].append(skill.name)
 
     # 2. MCP overlay
     overlay = preset_dir / "mcp.overlay.json"

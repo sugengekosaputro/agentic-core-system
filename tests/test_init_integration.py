@@ -16,9 +16,9 @@ class InitIntegrationTests(unittest.TestCase):
             root = Path(tmp).resolve()
             init_mod.run(root)
 
-            # core skills vendored
-            for skill in ("core-init", "core-consultant", "core-orchestrator"):
-                self.assertTrue((root / ".agents/skills" / skill / "SKILL.md").exists())
+            # default init no longer installs project-local skills
+            self.assertTrue((root / ".agents/skills").exists())
+            self.assertEqual(list((root / ".agents/skills").glob("*/SKILL.md")), [])
 
             # base files present
             self.assertTrue((root / "AGENTS.md").exists())
@@ -50,9 +50,29 @@ class InitIntegrationTests(unittest.TestCase):
             proj = json.loads((root / ".agents/project.json").read_text())
             self.assertEqual(proj["language"], "")
             self.assertEqual(proj["framework"], "")
-            # the agnostic core skills are present and usable on their own
-            for skill in ("core-init", "core-consultant", "core-orchestrator"):
-                self.assertTrue((root / ".agents/skills" / skill / "SKILL.md").exists())
+            self.assertEqual(proj["skills"], {"workflow": [], "stack": []})
+
+    def test_init_with_preset_applies_stack_preset_without_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            init_mod.run(root, preset_names=["preset-angular"])
+
+            self.assertTrue((root / ".agents/skills/stack-angular/SKILL.md").exists())
+            proj = json.loads((root / ".agents/project.json").read_text())
+            self.assertIn("stack-angular", proj["skills"]["stack"])
+            self.assertIn({"name": "preset-angular", "version": "0.2.0"}, proj["kit"]["presets"])
+            self.assertEqual(validate_mod.validate(root), [])
+
+    def test_init_with_workflow_preset_records_workflows(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            init_mod.run(root, preset_names=["preset-workflow-standard"])
+
+            self.assertTrue((root / ".agents/skills/workflow-explore/SKILL.md").exists())
+            proj = json.loads((root / ".agents/project.json").read_text())
+            self.assertIn("workflow-explore", proj["skills"]["workflow"])
+            self.assertIn({"name": "preset-workflow-standard", "version": "0.2.0"}, proj["kit"]["presets"])
+            self.assertEqual(validate_mod.validate(root), [])
 
 
 if __name__ == "__main__":

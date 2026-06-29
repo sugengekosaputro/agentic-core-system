@@ -6,11 +6,7 @@ front-matter `name` + `description` at startup; the body loads on demand.
 ## Rules
 
 1. **Layer prefix** = first segment of the name:
-   - `core-*` — agent operations (init, consultant, orchestrator). Shipped by
-     agentkit-core; do not fork.
-   - `virtual-assistant-*` — job-function methodology (product-manager,
-     business-analyst, architect, developer, qa, security, devops). From
-     `preset-base`.
+   - `workflow-*` - reusable task workflow or methodology.
    - `stack-*` — technology conventions for a specific framework/language. From a
      stack preset (e.g. `preset-spring-boot`).
 2. **`name` must equal the directory name** and be lowercase-hyphen

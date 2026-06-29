@@ -5,13 +5,12 @@ resolved versions and a `kitManaged` file list in `.agents/project.json`.
 
 ## What `agentkit upgrade` does
 
-- Refreshes **kit-managed** files: the core skills
-  (`core-init`/`core-consultant`/`core-orchestrator`), `.agents/README.md`, the git
-  hooks, and the **`AGENTS.md` core region** (the text between the `agentkit:core`
-  markers). Then it re-runs `sync`.
+- Refreshes **kit-managed** files: `.agents/README.md`, the git hooks, and the
+  **`AGENTS.md` core region** (the text between the `agentkit:core` markers). Then
+  it re-runs `sync`.
 - Leaves **project-owned** content untouched: the `AGENTS.md` **project region**,
   `permissions.json`, `provider-overrides.json`, `.agents/mcp/servers.json`,
-  `docs/`, `.agents/project.json`, and any `virtual-assistant-*` / `stack-*` skills
+  `docs/`, `.agents/project.json`, and any `workflow-*` / `stack-*` skills
   (so your customizations and preset edits are safe).
 
 It prints the list of files it refreshed; review the diff, then commit.
@@ -23,7 +22,7 @@ project is self-contained at runtime (no live dependency on the kit repo).
 
 ## Notes
 
-- By default, preset-provided skills (`virtual-assistant-*`, `stack-*`) are
+- By default, preset-provided skills (`workflow-*`, `stack-*`) are
   project-owned and **not** overwritten, to protect your edits. To pull newer
   bundled preset versions, run `agentkit upgrade --refresh-presets` (re-applies the
   recorded presets, overwriting their skills). Re-running `agentkit init` only adds

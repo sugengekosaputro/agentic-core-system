@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """`agentkit init` / `agentkit upgrade`: scaffold and refresh agent context.
 
-init vendors base templates + core skills into a target project (without
-overwriting existing files), seeds .agents/project.json from a manifest, generates
-adapters, and enables the git hooks. upgrade refreshes only kit-managed files.
+init vendors base templates into a target project (without overwriting existing
+files), seeds .agents/project.json from a manifest, applies optional presets,
+generates adapters, and enables the git hooks. upgrade refreshes only
+kit-managed files.
 """
 
 from __future__ import annotations
@@ -13,10 +14,9 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from . import generate_adapters, presets
+from . import __version__, generate_adapters, presets
 
 TEMPLATES = Path(__file__).parent / "templates"
-CORE_SKILLS = TEMPLATES / "skills" / "core"
 
 
 def _copy_if_missing(src: Path, dst: Path) -> bool:
@@ -28,6 +28,10 @@ def _copy_if_missing(src: Path, dst: Path) -> bool:
     else:
         shutil.copy2(src, dst)
     return True
+
+
+def _ensure_dir(path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
 
 
 def _load_manifest(root: Path) -> dict:
@@ -58,20 +62,16 @@ def _seed_project_json(root: Path, manifest: dict) -> None:
         "buildTool": proj.get("buildTool", ""),
         "commands": proj.get("commands", {"verify": ""}),
         "kit": {
-            "core": (manifest.get("core") or {}).get("version", ""),
+            "core": (manifest.get("core") or {}).get("version", __version__),
             "presets": [],
         },
         "skills": {
-            "core": ["core-init", "core-consultant", "core-orchestrator"],
-            "virtual-assistant": [],
+            "workflow": [],
             "stack": [],
         },
         "memory": manifest.get("memory", {"scope": "both"}),
         "kitManaged": [
             ".agents/README.md",
-            ".agents/skills/core-init",
-            ".agents/skills/core-consultant",
-            ".agents/skills/core-orchestrator",
             ".githooks",
         ],
     }
@@ -89,6 +89,32 @@ def _enable_hooks(root: Path) -> None:
             ["git", "-C", str(root), "config", "core.hooksPath", ".githooks"],
             check=False,
         )
+
+
+def _preset_name(entry: object) -> str | None:
+    if isinstance(entry, dict):
+        name = entry.get("name")
+        return str(name) if name else None
+    if isinstance(entry, str):
+        return entry
+    return None
+
+
+def _selected_presets(manifest: dict, preset_names: list[str] | None) -> list[str]:
+    names: list[str] = []
+    for entry in manifest.get("presets", []) or []:
+        name = _preset_name(entry)
+        if name:
+            names.append(name)
+    names.extend(preset_names or [])
+
+    selected: list[str] = []
+    seen: set[str] = set()
+    for name in names:
+        if name not in seen:
+            selected.append(name)
+            seen.add(name)
+    return selected
 
 
 def _marked_block(text: str, start_prefix: str, end_prefix: str) -> str | None:
@@ -118,7 +144,7 @@ def _refresh_agents_core_region(root: Path, updated: list[str]) -> None:
     updated.append("AGENTS.md (core region)")
 
 
-def run(root: Path) -> Path:
+def run(root: Path, preset_names: list[str] | None = None) -> Path:
     """Bootstrap or adapt agent context in `root` (idempotent; never overwrites)."""
     root = Path(root).resolve()
     manifest = _load_manifest(root)
@@ -132,23 +158,17 @@ def run(root: Path) -> Path:
     _copy_if_missing(TEMPLATES / "docs", root / "docs")
     _copy_if_missing(TEMPLATES / "githooks", root / ".githooks")
     _copy_if_missing(TEMPLATES / "memory", root / ".agents/memory")
-
-    for skill_dir in sorted(CORE_SKILLS.iterdir()):
-        if skill_dir.is_dir():
-            _copy_if_missing(skill_dir, root / ".agents/skills" / skill_dir.name)
+    _ensure_dir(root / ".agents/skills")
 
     _seed_project_json(root, manifest)
 
-    # apply presets declared in the manifest (bundled by name or a local path)
-    for entry in manifest.get("presets", []) or []:
-        name = entry.get("name") if isinstance(entry, dict) else entry
-        if not name:
-            continue
+    # Apply presets declared in the manifest and/or passed on the CLI.
+    for name in _selected_presets(manifest, preset_names):
         preset_dir = presets.resolve_preset(name)
         if preset_dir is not None:
             presets.apply_preset(root, preset_dir)
         else:
-            print(f"agentkit: warning — preset not found, skipped: {name}")
+            print(f"agentkit: warning - preset not found, skipped: {name}")
 
     generate_adapters.sync(root, check=False)
     _enable_hooks(root)
@@ -156,9 +176,10 @@ def run(root: Path) -> Path:
 
 
 def upgrade(root: Path, refresh_presets: bool = False) -> list[str]:
-    """Refresh kit-managed files (core skills, .agents/README.md, hooks, AGENTS.md
-    core region) and re-sync. With `refresh_presets`, also re-apply recorded presets
-    (overwriting preset-provided skills). Project-owned content is otherwise untouched.
+    """Refresh kit-managed files (.agents/README.md, hooks, AGENTS.md core region)
+    and re-sync. With `refresh_presets`, also re-apply recorded presets
+    (overwriting preset-provided skills). Project-owned content is otherwise
+    untouched.
     """
     root = Path(root).resolve()
     updated: list[str] = []
@@ -174,10 +195,8 @@ def upgrade(root: Path, refresh_presets: bool = False) -> list[str]:
         updated.append(str(dst.relative_to(root)))
 
     _overwrite(TEMPLATES / "agents-README.md", root / ".agents/README.md")
-    for skill_dir in sorted(CORE_SKILLS.iterdir()):
-        if skill_dir.is_dir():
-            _overwrite(skill_dir, root / ".agents/skills" / skill_dir.name)
     _overwrite(TEMPLATES / "githooks", root / ".githooks")
+    _ensure_dir(root / ".agents/skills")
 
     _refresh_agents_core_region(root, updated)
 
@@ -186,7 +205,7 @@ def upgrade(root: Path, refresh_presets: bool = False) -> list[str]:
         if proj.exists():
             recorded = (json.loads(proj.read_text(encoding="utf-8")).get("kit", {}) or {}).get("presets", [])
             for entry in recorded or []:
-                name = entry.get("name") if isinstance(entry, dict) else entry
+                name = _preset_name(entry)
                 preset_dir = presets.resolve_preset(name) if name else None
                 if preset_dir is not None:
                     presets.apply_preset(root, preset_dir, overwrite=True)

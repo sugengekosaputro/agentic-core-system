@@ -10,13 +10,13 @@ from agentkit import init as init_mod, presets, validate as validate_mod
 
 
 class UpgradeTests(unittest.TestCase):
-    def test_upgrade_restores_core_and_preserves_project(self):
+    def test_upgrade_refreshes_managed_context_and_preserves_project(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp).resolve()
             init_mod.run(root)
 
-            # drift: corrupt a core skill
-            (root / ".agents/skills/core-init/SKILL.md").write_text("BROKEN\n", encoding="utf-8")
+            # drift: corrupt a kit-managed source file
+            (root / ".agents/README.md").write_text("BROKEN\n", encoding="utf-8")
 
             # tamper the AGENTS.md core region; add real content to the project region
             agents = root / "AGENTS.md"
@@ -29,9 +29,9 @@ class UpgradeTests(unittest.TestCase):
 
             updated = init_mod.upgrade(root)
 
-            skill = (root / ".agents/skills/core-init/SKILL.md").read_text(encoding="utf-8")
-            self.assertNotIn("BROKEN", skill)
-            self.assertIn("core-init", skill)
+            readme = (root / ".agents/README.md").read_text(encoding="utf-8")
+            self.assertNotIn("BROKEN", readme)
+            self.assertIn("Skill Taxonomy and Naming", readme)
 
             new_agents = agents.read_text(encoding="utf-8")
             self.assertNotIn("TAMPERED-CORE", new_agents)          # core region refreshed

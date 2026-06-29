@@ -2,7 +2,7 @@
 name: REPLACE-with-skill-name
 description: One sentence on what this skill does and WHEN to use it (the triggers). Keep it specific — this line is loaded at startup and drives routing.
 metadata:
-  layer: stack            # core | virtual-assistant | stack
+  layer: workflow         # workflow | stack
   sdlc_stage: delivery    # discovery | design | delivery | operations
 ---
 

@@ -22,4 +22,4 @@ metadata:
 Fetch current Angular / RxJS / TypeScript docs via Context7 before relying on memory.
 
 ## Hand-offs
-General method → `virtual-assistant-developer`.
+Pair with any installed `workflow-*` skill for project-specific delivery method.

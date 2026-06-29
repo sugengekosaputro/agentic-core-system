@@ -21,18 +21,21 @@ Project-local skills live under `.agents/skills` and are exposed to providers vi
 generated symlinks (`.kiro/skills`, `.claude/skills`) and discovered natively by
 opencode. They are grouped by name prefix (see `.agents/README.md`):
 
-- `core-*` — agent operations: `core-init` (bootstrap/adapt), `core-consultant`
-  (reason/recommend before a decision), `core-orchestrator` (route/plan/execute).
-- `virtual-assistant-*` — job-function methodology (BA, architect, developer, …).
-- `stack-*` — technology conventions for this project's stack.
+- `workflow-*` - reusable task workflows, such as discovery, planning,
+  implementation, review, or release checklists.
+- `stack-*` - technology conventions for this project's language, framework, or
+  platform.
 
 ## Intake
 
-For a broad or unclear request, start with `core-consultant` to frame the problem
-and decide, then `core-orchestrator` to route to the right skill and plan. For a
-small, clear task, pick the relevant skill and proceed. If a relevant MCP/tool is
-unavailable, fall back to local inspection, local commands, focused tests, or state
-the blocker.
+For a broad or unclear request, first frame the problem, options, trade-offs, and a
+clear recommendation before editing. Once the outcome is known, inspect local files,
+choose the relevant `workflow-*` and `stack-*` skills, make a short plan for
+cross-module work, and execute through verification. For a small, clear task, pick
+the relevant skill and proceed directly.
+
+If a relevant MCP/tool is unavailable, fall back to local inspection, local
+commands, focused tests, or state the blocker.
 
 ## Context7 Documentation
 
@@ -69,12 +72,15 @@ here exists so you can maintain the kit with agent assistance.
 
 Source of truth for what the kit ships: `agentkit/` (the engine `*.py`,
 `agentkit/templates/**`, `agentkit/presets/**`). The `.agents/**` in this repo is
-**vendored** from those templates — so:
+**vendored** from those templates, except project-owned facts in
+`.agents/project.json` — so:
 
-- Edit the **template** (`agentkit/templates/skills/core/**`, `AGENTS.base.md`, …),
+- Edit the **template** (`agentkit/templates/AGENTS.base.md`,
+  `agentkit/templates/agents-README.md`, …),
   not the vendored copy under `.agents/`.
 - Run `agentkit upgrade` to re-sync `.agents/**`, then `agentkit sync`/`validate`.
-- `tests/test_dogfood_sync.py` fails if `.agents` core skills drift from templates.
+- `tests/test_dogfood_sync.py` fails if `.agents/README.md` drifts from its template
+  or default project skills reappear.
 
 Dev setup, testing, and release: see `docs/development.md`. Status/roadmap:
 `docs/roadmap.md`. Verify with `python3 -m unittest discover -s tests`.

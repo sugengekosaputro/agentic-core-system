@@ -1,0 +1,9 @@
+{
+  "name": "preset-workflow-standard",
+  "version": "0.2.0",
+  "coreVersion": "0.2.0",
+  "kind": "workflow",
+  "language": "",
+  "framework": "",
+  "description": "Standard reusable delivery workflows: explore, plan, implement, and review."
+}

@@ -17,12 +17,12 @@ source is well-formed and the adapters are in sync.
 
 | Layer | Prefix | What | Source |
 |-------|--------|------|--------|
-| Core | `core-*` | agent operations: init, consultant, orchestrator | agentkit-core |
-| Virtual assistant | `virtual-assistant-*` | job-function methodology (BA, architect, developer, …) | preset-base |
-| Stack | `stack-*` | technology conventions (spring-boot, angular, …) | a stack preset |
+| Core | n/a | bootstrap, sync, validation, memory/docs/MCP/permissions, adapter generation | agentkit-core |
+| Workflow | `workflow-*` | reusable task workflow/instructions | a workflow preset or project |
+| Stack | `stack-*` | technology conventions (spring-boot, angular, ...) | a stack preset or project |
 
-Core is minimal and agnostic. Roles and stacks are **opt-in**, scaffolded per
-project from presets.
+Core is minimal and agnostic. Workflow and stack skills are **opt-in**, scaffolded
+per project from presets or written locally.
 
 ## Manifest
 
@@ -49,3 +49,20 @@ Detail belongs in skill `references/` (loaded on demand) and `docs/`.
 no tokens during normal work, and `validate` keeps it bounded. Decisions still go to
 ADRs and facts to `project.json` — the journal is for continuity and pointers only.
 `project.json` records the chosen `memory.scope` (workspace / agent / both).
+
+## Skills vs delegation
+
+Skills are workflows and instructions. They guide the current agent when a task
+needs a reusable method or stack convention.
+
+Subagents/custom agents are actual workers. They can have separate prompts, tool
+policies, and delegation boundaries, but those formats are provider-specific.
+agentkit keeps this separate from adapter sync.
+
+`agentkit agents generate --provider codex` writes project-scoped Codex custom
+agents under `.codex/agents/`: `explorer`, `planner`, `implementer`, and
+`reviewer`. `--check` verifies drift without writing. Existing files without an
+agentkit marker are never overwritten.
+
+Claude/Kiro delegation generation is intentionally unsupported until those
+provider-specific formats are verified.
