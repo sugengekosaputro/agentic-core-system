@@ -1,19 +1,22 @@
-# Python
-__pycache__/
-*.pyc
-build/
-dist/
-*.egg-info/
-.venv/
-.eggs/
-
-# Local agent credentials / env
-.env
-.env.*
-!.env.example
-!.env.mcp.example
-
-# OS / IDE
+# OS and editors
 .DS_Store
 .idea/
 .vscode/
+
+# Local environment and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Runtime and cache
+__pycache__/
+*.py[cod]
+.cache/
+build/
+dist/
+tmp/
+.venv/
+
+# Behavior-probe fixtures (scripts/probe.sh)
+.probe_tmp/

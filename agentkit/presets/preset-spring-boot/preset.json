@@ -1,9 +1,0 @@
-{
-  "name": "preset-spring-boot",
-  "version": "0.2.0",
-  "coreVersion": "0.2.0",
-  "kind": "stack",
-  "language": "java",
-  "framework": "spring-boot",
-  "description": "Minimal Spring Boot (Maven) starter conventions: web layering, JPA + Flyway + PostgreSQL."
-}

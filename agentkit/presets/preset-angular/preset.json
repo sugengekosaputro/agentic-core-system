@@ -1,9 +1,0 @@
-{
-  "name": "preset-angular",
-  "version": "0.2.0",
-  "coreVersion": "0.2.0",
-  "kind": "stack",
-  "language": "typescript",
-  "framework": "angular",
-  "description": "Minimal Angular (TypeScript) frontend conventions: components, services, routing, testing."
-}

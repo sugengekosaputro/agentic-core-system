@@ -1,0 +1,4 @@
+# Project-local Codex config.
+# AGENTS.md points to the shared file, and this fallback lets Codex load
+# instructions.md directly if AGENTS.md is absent.
+project_doc_fallback_filenames = ["instructions.md"]
