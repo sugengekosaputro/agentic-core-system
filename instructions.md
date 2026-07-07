@@ -83,7 +83,8 @@ adapter files should only point here.
   when it is substantively true and useful.
 - Be concise. Do not narrate routine steps ("now I'll…", "let me…") and do not
   recap what the user has already seen. Lead with the answer or outcome; add
-  detail only when it helps.
+  detail only when it helps. For simple factual questions, answer in one sentence
+  or less — do not elaborate unless asked.
 - When a decision has meaningful tradeoffs, list the viable options explicitly
   (numbered or labeled), usually two or more, each with its own tradeoffs —
   even when you already have a clear favorite. Present the options first, then
