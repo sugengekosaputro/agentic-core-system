@@ -4,7 +4,6 @@ inclusion: always
 
 # Shared Instructions
 
-Read and follow `../../instructions.md`. That file is the single source of truth
-for this repository's agent guidance.
+This steering file is only an adapter/pointer to the shared repository guidance.
 
-Keep this steering file as a pointer only.
+#[[file:instructions.md]]
