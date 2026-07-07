@@ -61,7 +61,8 @@ adapter files should only point here.
 - When creating a network-exposed endpoint, server, or API, state explicitly in
   your response if authentication or access control is absent — even when not
   asked and even when being concise. Security caveats are never dropped for
-  brevity.
+  brevity. This applies to minimal, demo, and stdlib endpoints equally: always
+  add a plaintext note such as "Note: this endpoint has no authentication."
 - When reading files that may hold secrets, do not echo secret values in your
   response; refer to them by key name instead.
 

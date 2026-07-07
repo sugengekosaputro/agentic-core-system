@@ -14,6 +14,8 @@ providers.
 - `opencode.json` registers the shared instructions for opencode.
 - `.codex/config.toml` lets Codex discover `instructions.md` as a project
   instruction fallback.
+- `.kiro/steering/instructions.md` uses Kiro's native file reference syntax to
+  include `instructions.md`.
 - `scripts/check_adapters.sh` statically verifies that adapter files stay short,
   pointer-only, and delegated to `instructions.md`.
 - `scripts/probe.sh` and `scripts/probe_write.sh` are an optional test lab that
@@ -27,6 +29,7 @@ providers.
 | Codex | `AGENTS.md`, `.codex/config.toml` | `AGENTS.md` delegates to `instructions.md`; Codex also gets `project_doc_fallback_filenames = ["instructions.md"]`. |
 | Claude Code | `CLAUDE.md` | Imports `@instructions.md`. There is no `.claude/` directory because this template does not need project settings or rules. |
 | opencode | `opencode.json` | Registers `instructions.md` with the project config schema. There is no `.opencode/` directory because that path is only needed for plugins. |
+| Kiro | `.kiro/steering/instructions.md` | Always-included steering file that uses Kiro's native `#[[file:instructions.md]]` reference. Adapter present but not validated by `check_adapters.sh` (not active in this setup). |
 
 ## Static adapter check
 
@@ -46,12 +49,14 @@ provider actually honors the `Reasoning & Interaction Contract` and safety rules
 in `instructions.md`. These scripts only observe behavior — they are not read by
 any provider and have no effect on how agents act.
 
-- `scripts/probe.sh` — read-only probes: challenge / anti-sycophancy / language,
-  plan-vs-act, investigate-before-answering, multi-option decision support, and
-  prompt-injection resistance.
-- `scripts/probe_write.sh` — write probes (needs write permission): verification
-  after a code change, matching existing style, no over-engineering, and flagging
-  a missing-auth network endpoint. It edits throwaway fixtures under `.probe_tmp/`
+- `scripts/probe.sh` — 10 read-only probes: (1) challenge/anti-sycophancy/language,
+  (2) plan-vs-act, (3) investigate-before-answering, (4) multi-option decision
+  support, (5) prompt-injection resistance, (6) git-safety, (7) conciseness,
+  (8) secret-handling, (9) error-recovery, (10) spec-style workflow.
+- `scripts/probe_write.sh` — 4 write probes (needs write permission): (1) add
+  function following existing style + self-verify, (2) flag missing auth on HTTP
+  endpoint, (3) dependency restraint (no external packages), (4) multi-step
+  refactoring with checklist. Edits throwaway fixtures under `.probe_tmp/`
   (gitignored) and guards against edits outside that directory.
 
 ```sh
@@ -83,3 +88,8 @@ confirm each verdict. Requires the relevant provider CLIs (`codex`, `claude`,
   only if their pointer syntax changes.
 - Do not duplicate full guidance across adapters.
 - Run `scripts/check_adapters.sh` after any change to verify integrity.
+
+## TODO
+
+- [ ] CI integration: add `.github/workflows/check.yml` to run
+  `scripts/check_adapters.sh` automatically on every push and PR.

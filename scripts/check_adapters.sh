@@ -84,6 +84,8 @@ require_max_lines() {
 }
 
 echo "${c_bld}Static adapter validation${c_reset} (repo: $ROOT)"
+echo "  ${c_yel:-}NOTE${c_reset:-} .kiro/steering/instructions.md exists but is not validated here (not active in this setup)"
+echo
 
 require_file "shared instructions file exists" "instructions.md"
 require_fixed "AGENTS.md delegates to instructions.md" "AGENTS.md" "[instructions.md](instructions.md)"
