@@ -5,16 +5,17 @@ providers.
 
 ## Files
 
-- `instructions.md` is the source of truth for repository guidance.
+- `instructions.md` is the source of truth for repository guidance, including a
+  portable spec-style workflow for larger features, risky bugs, and ambiguous
+  multi-file work.
 - `AGENTS.md` points generic agents and Codex-compatible tools to the shared
   instructions.
 - `CLAUDE.md` imports the shared instructions for Claude Code.
 - `opencode.json` registers the shared instructions for opencode.
 - `.codex/config.toml` lets Codex discover `instructions.md` as a project
   instruction fallback.
-- `.kiro/steering/instructions.md` points Kiro steering to the shared
-  instructions.
-- `.antigravity/AGENTS.md` points Antigravity to the shared instructions.
+- `scripts/check_adapters.sh` statically verifies that adapter files stay short,
+  pointer-only, and delegated to `instructions.md`.
 - `scripts/probe.sh` and `scripts/probe_write.sh` are an optional test lab that
   checks whether providers actually follow `instructions.md`. They do not affect
   agent behavior.
@@ -26,8 +27,17 @@ providers.
 | Codex | `AGENTS.md`, `.codex/config.toml` | `AGENTS.md` delegates to `instructions.md`; Codex also gets `project_doc_fallback_filenames = ["instructions.md"]`. |
 | Claude Code | `CLAUDE.md` | Imports `@instructions.md`. There is no `.claude/` directory because this template does not need project settings or rules. |
 | opencode | `opencode.json` | Registers `instructions.md` with the project config schema. There is no `.opencode/` directory because that path is only needed for plugins. |
-| Kiro | `.kiro/steering/instructions.md` | Always-included steering file that points to `../../instructions.md`. |
-| Antigravity | `.antigravity/AGENTS.md` | Delegates to `../instructions.md`; no settings JSON is included without a documented project config requirement. |
+
+## Static adapter check
+
+Run this lightweight check after changing adapter or instruction files. It
+verifies that adapters stay pointer-only and that `instructions.md` avoids
+provider-specific adapter details. It does not call any provider CLI or require
+authentication.
+
+```sh
+scripts/check_adapters.sh
+```
 
 ## Behavior probes (optional test lab)
 

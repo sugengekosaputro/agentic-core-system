@@ -20,3 +20,6 @@ tmp/
 
 # Behavior-probe fixtures (scripts/probe.sh)
 .probe_tmp/
+
+# Removed providers (legacy)
+.OpenAgentic/

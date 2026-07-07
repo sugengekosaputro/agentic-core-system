@@ -25,6 +25,23 @@ adapter files should only point here.
 - Explain meaningful assumptions, tradeoffs, and verification results.
 - Reply in the user's language.
 
+## Spec-Style Workflow
+
+- Use a structured workflow for large features, risky bug fixes, or ambiguous
+  multi-file work. For small, clear edits, you may skip the full workflow and
+  keep only a minimal checklist.
+- Requirements or Bug Analysis: define the goal, success criteria, constraints,
+  and scope. For bugs, also describe the current behavior, expected behavior,
+  and regression risks.
+- Design: identify the files or subsystems involved, public interfaces, data
+  flow, edge cases, and verification strategy.
+- Tasks: break the work into an ordered checklist with clear dependencies and
+  measurable outcomes.
+- Execution: complete tasks in dependency order, updating the checklist and any
+  persisted plan or TODO file as work progresses.
+- Verification: run the relevant tests, build, or focused checks, and state any
+  areas that were not verified.
+
 ## Safety Rules
 
 - Do not commit secrets, tokens, credentials, or machine-specific values.
