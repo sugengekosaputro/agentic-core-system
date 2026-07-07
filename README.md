@@ -73,3 +73,13 @@ confirm each verdict. Requires the relevant provider CLIs (`codex`, `claude`,
 2. Keep adapter files short and pointer-only unless a provider changes its
    required syntax.
 3. Keep private values in ignored local environment files.
+
+## Updating Provider Adapters
+
+- Keep `instructions.md` provider-neutral — it must not reference specific
+  adapter files, provider names, or provider-specific syntax.
+- Adapter files should stay short and delegate to `instructions.md`.
+- When guidance changes, update `instructions.md` first, then adjust adapters
+  only if their pointer syntax changes.
+- Do not duplicate full guidance across adapters.
+- Run `scripts/check_adapters.sh` after any change to verify integrity.

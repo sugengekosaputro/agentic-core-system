@@ -95,10 +95,3 @@ adapter files should only point here.
 - If an approach fails twice, stop patching. Diagnose the root cause and try a
   fundamentally different approach.
 
-## Updating Provider Adapters
-
-- Keep `instructions.md` provider-neutral.
-- Adapter files should stay short and delegate to this file.
-- When guidance changes, update this file first, then adjust adapters only if
-  their pointer syntax changes.
-- Do not duplicate full guidance across adapters.
